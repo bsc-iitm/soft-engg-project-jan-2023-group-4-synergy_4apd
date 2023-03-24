@@ -4,6 +4,7 @@ from flask_cors import CORS
 
 from backend.config import Config
 from backend.database import *
+# from backend.models import *
 
 
 app = Flask(__name__, template_folder='templates')
@@ -18,4 +19,5 @@ cors = CORS(app)
 
 
 if __name__ == '__main__':
+    # db.create_all()
     app.run(host='0.0.0.0', port=5000)
