@@ -22,3 +22,5 @@ class Ticket(db.Model):
     solution = Column(Integer, ForeignKey('message.id'), nullable=False)
 
     last_response_time = Column(DateTime, default=func.now())
+
+    tags = relationship('Tag', secondary='tickets_tags')
