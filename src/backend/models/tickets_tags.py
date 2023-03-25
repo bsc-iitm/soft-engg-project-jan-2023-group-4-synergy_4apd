@@ -1,8 +1,8 @@
 # Author: Afnan
 
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from backend.database import db
 
-tickets_tags = Table("tickets_tags",
-                       Column('ticket_id', Integer, ForeignKey('ticket.id')),
-                       Column('tag_id', Integer, ForeignKey('tag.id'))
+tickets_tags = db.Table("tickets_tags",
+                       db.Column('ticket_id', db.Integer, db.ForeignKey('ticket.id')),
+                       db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
                        )

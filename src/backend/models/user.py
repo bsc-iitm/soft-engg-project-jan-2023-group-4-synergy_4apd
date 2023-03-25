@@ -1,7 +1,6 @@
 # Author: Adhil
 
 from backend.database import db
-from sqlalchemy import Column, Integer, String, Boolean
 
 from sqlalchemy.dialects.sqlite import BLOB
 from flask_security import UserMixin
@@ -12,16 +11,16 @@ class User(db.Model,UserMixin):
 	
 	__tablename__="user"
 	
-	id = Column("id", Integer(), primary_key = True)
-	name = Column("name", String(),nullable = False)
-	email = Column("email", String(), unique = True, nullable = False)
-	password_hash = Column("password_hash", String(), nullable=False)
-	profile_pic = Column("profile_pic", BLOB)
-	bio = Column("bio", String())
-	phone = Column("phone", Integer())
-	designation = Column("designation", String(), nullable = False)
+	id = db.Column("id", db.Integer, primary_key = True)
+	name = db.Column("name", db.String,nullable = False)
+	email = db.Column("email", db.String, unique = True, nullable = False)
+	password_hash = db.Column("password_hash", db.String, nullable=False)
+	profile_pic = db.Column("profile_pic", BLOB)
+	bio = db.Column("bio", db.String)
+	phone = db.Column("phone", db.Integer)
+	designation = db.Column("designation", db.String, nullable = False)
 	
-	active = Column("active", Boolean())
-	fs_uniquifier = Column("fs_uniquifier", String(255), unique = True, nullable = False)
+	active = db.Column("active", db.Boolean)
+	fs_uniquifier = db.Column("fs_uniquifier", db.String(255), unique = True, nullable = False)
 	
-	roles = db.relationship("Role",secondary=roles_users,backref=db.backref("user",lazy="dynamic"))
+	roles = db.relationship("Role", secondary=roles_users, backref=db.backref("user", lazy="dynamic"))

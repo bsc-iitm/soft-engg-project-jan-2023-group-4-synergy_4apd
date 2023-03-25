@@ -1,8 +1,8 @@
 # Author: Afnan, Adhil
 
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from backend.database import db
 
-articles_tags = Table("articles_tags",
-                       Column('article_id', Integer, ForeignKey('article.id')),
-                       Column('tag_id', Integer, ForeignKey('tag.id'))
+articles_tags = db.Table("articles_tags",
+                       db.Column('article_id', db.Integer, db.ForeignKey('article.id')),
+                       db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
                        )

@@ -1,7 +1,6 @@
 # Author: Afnan, Adhil
 
 from backend.database import db
-from sqlalchemy import String, Column, Integer, DateTime, ForeignKey
 from datetime import datetime
 
 from .articles_tags import *
@@ -9,12 +8,12 @@ from .articles_tags import *
 class Article(db.Model):
     __tablename__ = "article"
     
-    id = Column("id", Integer(), primary_key = True)
-    title = Column("title", String(), nullable = False)
-    created_at = Column("created_at", DateTime(), default = datetime.now())
-    updated_at = Column("updated_at", DateTime(), default = datetime.now())
-    content = Column("content", String(), nullable = False)
-    creator = Column("creator", Integer(), ForeignKey("user.id"), nullable = False)
+    id = db.Column("id", db.Integer, primary_key = True)
+    title = db.Column("title", db.String, nullable = False)
+    created_at = db.Column("created_at", db.DateTime, default = datetime.now())
+    updated_at = db.Column("updated_at", db.DateTime, default = datetime.now())
+    content = db.Column("content", db.String, nullable = False)
+    creator = db.Column("creator", db.Integer, db.ForeignKey("user.id"), nullable = False)
 
     tags = db.relationship("Tag",secondary=articles_tags,backref=db.backref("article",lazy="dynamic"))
     

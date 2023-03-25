@@ -1,8 +1,8 @@
 # Author: Adhil
 
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from backend.database import db
 
-roles_users = Table("roles_users",
-                       Column("user_id", Integer(), ForeignKey("user.id")),
-                       Column("role_id", Integer(), ForeignKey("role.id"))
+roles_users = db.Table("roles_users",
+                       db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+                       db.Column("role_id", db.Integer, db.ForeignKey("role.id"))
                        )
