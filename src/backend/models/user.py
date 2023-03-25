@@ -6,6 +6,8 @@ from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.dialects.sqlite import BLOB
 from flask_security import UserMixin
 
+from .roles_users import *
+
 class User(db.Model,UserMixin):
 	
 	__tablename__="user"
@@ -22,4 +24,4 @@ class User(db.Model,UserMixin):
 	active = Column("active", Boolean(), nullable = False)
 	fs_uniquifier = Column("fs_uniquifier", String(255), unique = True, nullable = False)
 	
-	#roles = relationship("Role",secondary=roles_users,backref=backref("users",lazy="dynamic"))
+	roles = db.relationship("Role",secondary=roles_users,backref=db.backref("user",lazy="dynamic"))
