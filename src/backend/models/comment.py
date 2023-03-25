@@ -9,5 +9,5 @@ class Comment(db.Model):
 
     id = Column("id", Integer(), primary_key = True)
     article_id = Column("article_id", Integer(), ForeignKey("article.id"))
-    hidden = Column("hidden", Boolean(), nullable = False)
+    hidden = Column("hidden", Boolean())
     content = Column("content", String(), nullable = False)

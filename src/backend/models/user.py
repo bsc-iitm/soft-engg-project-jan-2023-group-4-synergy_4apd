@@ -21,7 +21,7 @@ class User(db.Model,UserMixin):
 	phone = Column("phone", Integer())
 	designation = Column("designation", String(), nullable = False)
 	
-	active = Column("active", Boolean(), nullable = False)
+	active = Column("active", Boolean())
 	fs_uniquifier = Column("fs_uniquifier", String(255), unique = True, nullable = False)
 	
 	roles = db.relationship("Role",secondary=roles_users,backref=db.backref("user",lazy="dynamic"))

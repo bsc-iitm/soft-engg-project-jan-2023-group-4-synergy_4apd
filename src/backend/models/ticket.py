@@ -5,6 +5,8 @@ from sqlalchemy import Column, Integer, DateTime, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
+from .tickets_tags import *
+
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
@@ -23,4 +25,4 @@ class Ticket(db.Model):
 
     last_response_time = Column(DateTime, default=func.now())
 
-    tags = relationship('Tag', secondary='tickets_tags')
+    tags = db.relationship("Tag", secondary=tickets_tags,backref=db.backref("ticket",lazy="dynamic"))

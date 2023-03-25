@@ -11,6 +11,6 @@ class Message(db.Model):
     text = Column("text", String(), nullable = False)
     sender_id = Column("sender_id", Integer(), ForeignKey("user.id"))
     ticket_id = Column("ticket_id", Integer(), ForeignKey("ticket.id"))
-    hidden = Column("hidden", Boolean(), nullable = False)
+    hidden = Column("hidden", Boolean())
     posted_at = Column("posted_at", DateTime(), default = datetime.now())
     flagged = Column("flagged", Boolean(), nullable = False)
