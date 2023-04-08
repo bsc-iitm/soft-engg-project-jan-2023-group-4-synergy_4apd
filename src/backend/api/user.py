@@ -20,6 +20,7 @@ def user():
         else:
             return 'Content-Type not supported!'
         user_datastore.create_user(
+                                    id = uuid.uuid4()
                                     name = user_data['name'],
                                     email = user_data['email'],
                                     password = hash_password(user_data['password']),
@@ -75,6 +76,36 @@ def user():
         except:
             return jsonify('Internal server error',500)
     
+    #ERROR
+    else:
+        return jsonify('No access rights, forbidden!',403)
+    
+@app.route('/api/v1/admin/user', methods=['POST','DELETE'])
+@login_required
+def admin():
+    #POST
+    if request.method == 'POST':
+        if request.headers.get('Content-Type') == 'application/json':
+           user_data = request.get_json()
+        else:
+            return 'Content-Type not supported!'
+        if user_data['action'] == 'promote':
+            try:
+                pass
+            except:
+                return jsonify('Malformed request',400)
+        elif user_data['action'] == 'demote':
+            try:
+                pass
+            except:
+                return jsonify('Malformed request',400)
+        else:
+            return jsonify('No access rights; Forbidden',403)
+        
+    #DELETE
+    elif request.method == 'DELETE':
+        pass
+
     #ERROR
     else:
         return jsonify('No access rights, forbidden!',403)
