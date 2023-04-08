@@ -18,9 +18,9 @@ def user():
         if request.headers.get('Content-Type') == 'application/json':
            user_data = request.get_json()
         else:
-            return 'Content-Type not supported!'
+            return jsonify('Malformed request!',400)
         user_datastore.create_user(
-                                    id = uuid.uuid4()
+                                    id = uuid.uuid4(),
                                     name = user_data['name'],
                                     email = user_data['email'],
                                     password = hash_password(user_data['password']),
@@ -43,24 +43,25 @@ def user():
                         'pic' : current_user.pic,
                         'bio' : current_user.bio,
                         'phone' : current_user.phone,
-                        'designation' : current_user.designation
+                        'designation' : current_user.designation,
         },200)
     
     #PUT
     elif request.method == 'PUT':
+        new_user_data = []
         if request.headers.get('Content-Type') == 'application/json':
            new_user_data = request.get_json()
         else:
-            return 'Content-Type not supported!'
-        current_user = (
-                        name = new_user_data['name'],
-                        email = new_user_data['email'],
-                        password = hash_password(new_user_data['password']),
-                        pic = new_user_data['pic'],
-                        bio = new_user_data['bio'],
-                        phone = new_user_data['phone'],
-                        designation = new_user_data['designation']
-        )
+            return jsonify('Malformed request!',400)
+        
+        current_user.name = new_user_data['name']
+        current_user.email = new_user_data['email']
+        current_user.password = hash_password(new_user_data['password'])
+        current_user.pic = new_user_data['pic']
+        current_user.bio = new_user_data['bio']
+        current_user.phone = new_user_data['phone']
+        current_user.designation = new_user_data['designation']
+        
         try:
             db.session.commit()
             return jsonify('User updated successfully',200)
@@ -88,7 +89,7 @@ def admin():
         if request.headers.get('Content-Type') == 'application/json':
            user_data = request.get_json()
         else:
-            return 'Content-Type not supported!'
+            return jsonify('Malformed request!',400)
         if user_data['action'] == 'promote':
             try:
                 pass

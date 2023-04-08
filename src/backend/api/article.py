@@ -25,6 +25,7 @@ def articles():
                                 creator = current_user.id,
         )
         try:
+            db.session.add(new_article)
             db.session.commit()
             return jsonify('Article created successfully',201)
         except:

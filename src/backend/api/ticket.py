@@ -16,18 +16,19 @@ def tickets():
         else:
             return jsonify('Malformed request!',400)
         new_ticket = Ticket(
-                            id = uuid.uuid4()
-                            title = ticket_data['title']
-                            status = 'status'
-                            votes = 0
-                            is_public = True
-                            creator = current_user.id
-                            assignee = 'UUID'
-                            solution = 'UUID'
-                            last_response_time = 'NIL'
-                            tags = '1,2,3,'
+                            id = uuid.uuid4(),
+                            title = ticket_data['title'],
+                            status = 'status',
+                            votes = 0,
+                            is_public = True,
+                            creator = current_user.id,
+                            assignee = 'user_id',
+                            solution = 'message_id',
+                            last_response_time = 'NIL',
+                            tags = '1,2,3,',
         )
         try:
+            db.session.add(new_ticket)
             db.session.commit()
             return jsonify('Ticket created successfully',201)
         except:
@@ -74,7 +75,7 @@ def individual_ticket(uuid):
     if request.method == 'GET':
         try:
             messages = Message.query.filter_by(ticket_id=uuid).all()
-            return jsonify([
+            return jsonify({
                             'ticketID': ticket.id,
                             'votes': ticket.votes,
                             'title': ticket.title,
@@ -82,7 +83,7 @@ def individual_ticket(uuid):
                             'solutionID': ticket.solution,
                             'last_response_time': ticket.last_response_time,
                             'messages': messages
-            ],200)
+            },200)
         except:
             return jsonify('Internal server error',500)
 
