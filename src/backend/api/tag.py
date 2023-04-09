@@ -25,11 +25,11 @@ class TagAPI(Resource):
         ret = d.get('tagIDList')
         
         if ret=='' or ret is None:
-            return "Malformed request",400
+            return {"status":400,"message":"Malformed request!"},400
         
         idl=ret.strip().split(',')
         
-        tagIDList,retdict=[],{}
+        tagIDList,retdict=[],[]
 
         for i in idl:
             try:
@@ -38,16 +38,24 @@ class TagAPI(Resource):
                 tagIDList.append(i)
         
         if tagIDList[0]=="all":
-            return "all",200
-        else:        
+            tagi=Tag.query.all()
+            for i in tagi:
+                retdict.append({"tagID":i.id,"name":i.name,"description":i.description})
+            return {"status":200,"message":"Request successful","tags":retdict},200
+        else:
+            missing=False        
             for i in tagIDList:
                 tagi=Tag.query.filter_by(id=i).first()
                 if tagi is not None:
-                    retdict[tagi.id]=[tagi.id,tagi.name,tagi.description]
+                    retdict.append({"tagID":tagi.id,"name":tagi.name,"description":tagi.description})
                 else:
-                    return "No matching tags found!",404
+                    missing=True
+                    continue
+
+        if missing and len(retdict)==0:
+            return {"status":404,"message":"No matching tags found!"},404
         
-        return retdict,200
+        return {"status":200,"message":"Request successful","tags":retdict},200
 
     # def post(self,)
     
