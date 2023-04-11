@@ -32,50 +32,30 @@ class TicketsAPI(Resource):
             return jsonify('Ticket created successfully',201)
         except:
             return jsonify('Internal server error',500)
-
-    def get(self):
-        try:
-            tickets = Ticket.query.filter_by(is_public=True).all()
-            return jsonify(tickets, 200)
-        except:
-            return jsonify('Internal server error',500)
         
-
-class MyTicketsAPI(Resource):
-    def get(self):
-        try:
-            tickets = Ticket.query.filter_by(creator=current_user.id).all()
-            return jsonify(tickets, 200)
-        except:
-            return jsonify('Internal server error',500)
-
-    
-class TicketAPI(Resource):
-    '''
-    def individual_ticket(uuid):
-        try:
-            ticket = Ticket.query.filter_by(id=uuid).first()
-        except:
-            return jsonify('Internal server error',500)
-        if ticket.creator != current_user.id:
-            return jsonify('No access rights, forbidden!',403)
-    '''
-    
-    def get(self,ticket_id):
-        try:
-            ticket = Ticket.query.filter_by(id=ticket_id).first()
-            messages = Message.query.filter_by(ticket_id=ticket_id).all()
-            return jsonify({
-                            'ticketID': ticket.id,
-                            'votes': ticket.votes,
-                            'title': ticket.title,
-                            'status': ticket.status,
-                            'solutionID': ticket.solution,
-                            'last_response_time': ticket.last_response_time,
-                            'messages': messages
-            },200)
-        except:
-            return jsonify('Internal server error',500)
+            
+    def get(self,ticket_id=None):
+        if not ticket_id:
+            try:
+                tickets = Ticket.query.filter_by(is_public=True).all()
+                return jsonify(tickets, 200)
+            except:
+                return jsonify('Internal server error',500)
+        else:
+            try:
+                ticket = Ticket.query.filter_by(id=ticket_id).first()
+                messages = Message.query.filter_by(ticket_id=ticket_id).all()
+                return jsonify({
+                                'ticketID': ticket.id,
+                                'votes': ticket.votes,
+                                'title': ticket.title,
+                                'status': ticket.status,
+                                'solutionID': ticket.solution,
+                                'last_response_time': ticket.last_response_time,
+                                'messages': messages
+                },200)
+            except:
+                return jsonify('Internal server error',500)
 
     def put(self,ticket_id):
         ticket = Ticket.query.filter_by(id=ticket_id).first()
@@ -101,3 +81,26 @@ class TicketAPI(Resource):
             return jsonify('Ticket deleted successfully',200)
         except:
             return jsonify('Internal server error',500)
+        
+
+class MyTicketsAPI(Resource):
+    def get(self):
+        try:
+            tickets = Ticket.query.filter_by(creator=current_user.id).all()
+            return jsonify(tickets, 200)
+        except:
+            return jsonify('Internal server error',500)
+
+    
+#class TicketAPI(Resource):
+    '''
+    def individual_ticket(uuid):
+        try:
+            ticket = Ticket.query.filter_by(id=uuid).first()
+        except:
+            return jsonify('Internal server error',500)
+        if ticket.creator != current_user.id:
+            return jsonify('No access rights, forbidden!',403)
+    '''
+    
+    
