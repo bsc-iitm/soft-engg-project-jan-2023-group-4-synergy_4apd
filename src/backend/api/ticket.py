@@ -1,20 +1,19 @@
 from flask import request, jsonify
 from flask_security import login_required
 from flask_login import current_user
-from models.ticket import Ticket
-from models.message import Message
 import uuid
+from flask_restful import Resource
+from backend.models import *    
+
+class TicketsAPI(Resource):
     
-@app.route('/api/v1/tickets', methods=['GET','POST'])
-@login_required
-def tickets():
-    #POST
-    if request.method == 'POST':
+    def post(self):
         ticket_data = []
         if request.headers.get('Content-Type') == 'application/json':
             ticket_data = request.get_json()
         else:
             return jsonify('Malformed request!',400)
+        
         new_ticket = Ticket(
                             id = uuid.uuid4(),
                             title = ticket_data['title'],
@@ -33,48 +32,39 @@ def tickets():
             return jsonify('Ticket created successfully',201)
         except:
             return jsonify('Internal server error',500)
-        
-    #GET
-    elif request.method == 'GET':
+
+    def get(self):
         try:
             tickets = Ticket.query.filter_by(is_public=True).all()
             return jsonify(tickets, 200)
         except:
             return jsonify('Internal server error',500)
         
-    #ERROR
-    else:
-        return jsonify('No access rights, forbidden!',403)
-    
-@app.route('/api/v1/mytickets', methods=['GET'])
-@login_required
-def mytickets():
-    #GET
-    if request.method == 'GET':
+
+class MyTicketsAPI(Resource):
+    def get(self):
         try:
             tickets = Ticket.query.filter_by(creator=current_user.id).all()
             return jsonify(tickets, 200)
         except:
             return jsonify('Internal server error',500)
-        
-    #ERROR
-    else:
-        return jsonify('No access rights, forbidden!',403)
-    
-@app.route('/api/v1/ticket/<string:uuid>', methods=['GET','PUT','DELETE'])
-@login_required
-def individual_ticket(uuid):
-    try:
-        ticket = Ticket.query.filter_by(id=uuid).first()
-    except:
-        return jsonify('Internal server error',500)
-    if ticket.creator != current_user.id:
-        return jsonify('No access rights, forbidden!',403)
 
-    #GET
-    if request.method == 'GET':
+    
+class TicketAPI(Resource):
+    '''
+    def individual_ticket(uuid):
         try:
-            messages = Message.query.filter_by(ticket_id=uuid).all()
+            ticket = Ticket.query.filter_by(id=uuid).first()
+        except:
+            return jsonify('Internal server error',500)
+        if ticket.creator != current_user.id:
+            return jsonify('No access rights, forbidden!',403)
+    '''
+    
+    def get(self,ticket_id):
+        try:
+            ticket = Ticket.query.filter_by(id=ticket_id).first()
+            messages = Message.query.filter_by(ticket_id=ticket_id).all()
             return jsonify({
                             'ticketID': ticket.id,
                             'votes': ticket.votes,
@@ -87,9 +77,9 @@ def individual_ticket(uuid):
         except:
             return jsonify('Internal server error',500)
 
-    #PUT
-    elif request.method == 'PUT':        
-        ticket_data = []
+    def put(self,ticket_id):
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        new_ticket_data = []
         if request.headers.get('Content-Type') == 'application/json':
             new_ticket_data = request.get_json()
         else:
@@ -103,15 +93,11 @@ def individual_ticket(uuid):
         except:
             return jsonify('Malformed request!',400)
         
-    #DELETE
-    elif request.method == 'DELETE':
+    def delete(self,ticket_id):
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
         try:
             db.session.delete(ticket)
             db.session.commit()
             return jsonify('Ticket deleted successfully',200)
         except:
             return jsonify('Internal server error',500)
-        
-    #ERROR
-    else:
-        return jsonify('Malformed request!',400)
