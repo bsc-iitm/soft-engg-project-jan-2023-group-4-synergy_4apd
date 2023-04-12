@@ -4,7 +4,7 @@ from backend.models import *
 
 create_tag_parser=reqparse.RequestParser()
 create_tag_parser.add_argument('name')
-create_tag_parser.add_argument('description')
+create_tag_parser.add_argument('description')       
 
 modify_tag_parser=reqparse.RequestParser()
 modify_tag_parser.add_argument('tagID')
@@ -66,7 +66,7 @@ class TagAPI(Resource):
 
         x=Tag.query.filter_by(name=tagName).first()
 
-        if tagName != x.name:
+        if x is None:
         
             dbObj=Tag(name=tagName,description=tagDescription)
             db.session.add(dbObj)
@@ -75,8 +75,24 @@ class TagAPI(Resource):
             return {"status":201,"message":"Request successful"},201
         else:
             return {"status":200,"message":"Tag already exists!"},200
-
-
-
     
-#print("DONE")
+
+    def delete(self):
+        d=delete_tag_parser.parse_args()
+        tagID=d.get('tagID',None)
+
+
+        if tagID=='' or tagID is None:
+            return {"status":400,"message":"Malformed request!"},400
+
+        tagID=int(tagID)
+        x=Tag.query.filter_by(id=tagID).first()
+
+        if x==None:
+            return {"status":200,"message":"Tag doesn't exist!"},200
+        else:
+            db.session.delete(x)
+            db.session.commit()
+            return {"status":200,"message":"Deletion successful!"},200
+        
+            
