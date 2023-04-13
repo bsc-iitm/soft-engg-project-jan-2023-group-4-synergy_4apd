@@ -1,0 +1,1092 @@
+openapi: 3.0.3
+info:
+  title: Service Desk API v1
+  version: 1.0.11
+  description: >
+servers:
+  - url: http://localhost:5000
+paths:
+  "/api/v1/tickets":
+    summary: TICKET API ENDPOINT - Standard Users
+    post:
+      summary: Create a new ticket.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:
+                title: Sample Title
+                firstMessage: This is the first message
+                tags: <list_of_tags_from_among_the_available_tags>
+                visibility: public
+      responses:
+        '201':
+          description: Valid ticket created
+          content:
+            application/json:
+              examples:
+                Valid Ticket Creation:
+                  value: >
+                    {"status":201,"message":"Ticket created successfully",
+                    "ticketID":"<UUID_ticket>","title":"Sample Title",
+                    "messageID":"<UUID_first_message>", "firstMessage":"This is the first message",
+                      "visibility":"public",
+                      "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+    get:
+      summary: Getting all public tickets
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Ticket GET Request:
+                  value: >
+                    { "status": 200, "message": "Request successful", "tickets":
+                    [
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 6,
+                        "title": "Ticket Title 1",
+                        "Status": "In progress",
+                        "LastResponseTime": "<time_in_format>"
+                      },
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 2,
+                        "title": "Ticket Title 2",
+                        "Status": "Open",
+                        "LastResponseTime": "<time_in_format>"
+                      },
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 2,
+                        "title": "Ticket Title 3",
+                        "Status": "Closed",
+                        "LastResponseTime": "<time_in_format>"
+                      }
+                    ] }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+  /api/v1/mytickets:
+    summary: TICKET API ENDPOINT - Logged-in User
+    get:
+      summary: Getting my (the logged-in user's) tickets
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Ticket GET Request:
+                  value: >
+                    { "status": 200, "message": "Request successful", "tickets":
+                    [
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 6,
+                        "title": "Ticket Title 1",
+                        "Status": "In progress",
+                        "Visibility": "Public",
+                        "LastResponseTime": "<time_in_format>"
+                      },
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 6,
+                        "title": "Ticket Title 1",
+                        "Status": "In progress",
+                        "Visibility": "Public",
+                        "LastResponseTime": "<time_in_format>"
+                      },
+                      {
+                        "ticketID":"<UUID_ticket>",
+                        "Votes": 6,
+                        "title": "Ticket Title 1",
+                        "Status": "In progress",
+                        "Visibility": "Public",
+                        "LastResponseTime": "<time_in_format>"
+                      }
+                    ] }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+  /api/v1/tickets/<UUID_ticket>:
+    summary: SPECIFIC TICKET API ENDPOINT
+    get:
+      summary: Getting a specific ticket
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Ticket GET Request:
+                  value: >
+                    { "status": 200, "message": "Request successful",
+                    "ticketID":"<UUID_ticket>",
+                      "Votes": 6,
+                      "title": "Ticket Title 1",
+                      "Status": "In progress",
+                      "solutionID":"<UUID_message> if marked as solution",
+                      "LastResponseTime": "<time_in_format>",
+                      "messages":[
+                        {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      },
+                      {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      },
+                      {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      }
+                      ]
+
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+    put:
+      summary: Ticket Modification
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:
+                title: Sample Title
+                visibility: public
+      responses:
+        '200':
+          description: Ticket modified successfully
+          content:
+            application/json:
+              examples:
+                Valid Ticket Deletion:
+                  value: |
+                    {"status":200,"message":"Ticket modified successfully"}
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+    delete:
+      summary: Ticket Deletion
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Ticket deleted successfully
+          content:
+            application/json:
+              examples:
+                Valid Ticket Deletion:
+                  value: |
+                    {"status":200,"message":"Ticket deleted successfully"}
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+  /api/v1/messages:
+    summary: Messages API Endpoint
+    get:
+      summary: Getting message(s)
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: start
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: count
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: ticketUUID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Ticket GET Request:
+                  value: >
+                   { "status": 200, "message": "Request successful",
+                      "ticketID":"<UUID_ticket>",
+                      "LastResponseTime": "<time_in_format>",
+                      "messages":[
+                        {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      },
+                      {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      },
+                      {
+                        "messageID":"<UUID_message>",
+                        "text": "Message Text",
+                        "senderID":"<UUID-sender",
+                        "senderName":"sender_name",
+                        "senderPicture":"<profile_picture>",
+                        "timestamp": "<time_in_format>"
+                      }
+                      ]
+
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+
+  /api/v1/messages/<UUID_message>:
+    summary: Messages API Endpoint
+    delete:
+      summary: Deleting a specific message
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Message DELETE Request:
+                  value: >
+                    { "status": 200, "message": "Request successful",
+                      "messageID":"<UUID_message>",
+                      "LastResponseTime": "<time_in_format>"
+                      
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
+  /api/v1/admin/articles:
+    summary: Article API ENDPOINT - Admins ONLY
+    post:
+      summary: Article Creation
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:   # Sample object
+                title: "Article Title"
+                content: "Article Content"
+                visibility: "public"
+            
+      responses:
+        201:
+          description: Valid article created
+          content:
+            application/json:
+              examples:
+                Valid Article Creation:
+                  value: 
+                    {
+                      "status":201,
+                      "content":"Article created successfully",
+                      "articleID":"<UUID_article>",
+                      "title":"Article Title"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    get:
+      summary: Getting all articles
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Article GET Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Request successful",
+                      "articles": [
+                        {
+                          "articleID":"<UUID_article>",
+                          "title": "Article Title 1",
+                          "content": "Article Content 1",
+                          "creator": "Article Creator 1",
+                          "created_at":"Article Creation Timestamp 1",
+                          "updated_at":"Article Updation Timestamp 1"
+                        },
+                        {
+                          "articleID":"<UUID_article>",
+                          "title": "Article Title 2",
+                          "content": "Article Content 2",
+                          "creator": "Article Creator 2",
+                          "created_at":"Article Creation Timestamp 2",
+                          "updated_at":"Article Updation Timestamp 2"
+                        },
+                        {
+                          "articleID":"<UUID_article>",
+                          "title": "Article Title 3",
+                          "content": "Article Content 3",
+                          "creator": "Article Creator 3",
+                          "created_at":"Article Creation Timestamp 3",
+                          "updated_at":"Article Updation Timestamp 3"
+                        },
+                      ]
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: >
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    
+    
+    
+  /api/v1/admin/articles/<UUID_article>:
+    summary: SPECIFIC ARTICLE API ENDPOINT - ADMINS ONLY!
+    get:
+      summary: Getting a specific article
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Article GET Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Request successful",
+                      "articleID":"<UUID_article>",
+                      "title": "Article Title 1",
+                      "content": "Article Content 1",
+                      "creator": "Article Creator 1",
+                      "created_at":"Article Creation Timestamp 1",
+                      "updated_at":"Article Updation Timestamp 1"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: >
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    put:
+      summary: Article Modification
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Article updated successfully
+          content:
+            application/json:
+              examples:
+                Valid Article Updation:
+                  value: 
+                    {
+                      "status":200,
+                      "message":"Article updated successfully",
+                      "title": "Article Title 1",
+                      "content": "Article Content 1",
+                      "updated_at":"Article Updation Timestamp 1"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                    }
+    delete:
+      summary: Article Deletion
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Article deleted successfully
+          content:
+            application/json:
+              examples:
+                Valid Article Deletion:
+                  value: 
+                    {
+                      "status":200,
+                      "message":"Article deleted successfully",
+                      "articleID":"<UUID_article>"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                    }
+
+  /api/v1/admin/comments:
+    summary: COMMENT API ENDPOINT - Admins ONLY
+    
+    post:
+      summary: Comment Creation
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:   # Sample object
+                article_id: "<UUID_Article>"
+                content: "Comment content"
+                hidden: "Boolean value"
+            
+      responses:
+        201:
+          description: Valid comment created for article
+          content:
+            application/json:
+              examples:
+                Valid Comment Creation:
+                  value: 
+                    {
+                      "status":201,
+                      "message":"Comment created successfully",
+                      "articleID":"<UUID_article>",
+                      "commentID":"<UUID_comment>",
+                      "content":"Comment content"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    get:
+      summary: Getting all comments of a particular article
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: articleUUID
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Comment GET Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Request successful",
+                      "articleID":"<UUID_article>",
+                      "articles": [
+                        {
+                          "commentID":"<UUID_comment_1>",
+                          "content":"Comment content 1"
+                        },
+                        {
+                          "commentID":"<UUID_comment_2>",
+                          "content":"Comment content 2"
+                        },
+                        {
+                          "commentID":"<UUID_comment_3>",
+                          "content":"Comment content 3"
+                        },
+                      ]
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    delete:
+      summary: Deleting all comments of a particular article
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: commentUUID
+          schema:
+            type: string
+          required: true
+      
+            
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Comment DELETE Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Request successful",
+                      "deleted_comment_IDs":
+                      {
+                        [
+                          "<UUID_comment_1>",
+                          "<UUID_comment_2>",
+                          "<UUID_comment_3>"
+                        ]
+                      }
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: >
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
