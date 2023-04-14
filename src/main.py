@@ -25,6 +25,8 @@ api.add_resource(MyTicketsAPI,'/api/v1/mytickets/')
 
 api.add_resource(MessageAPI,'/api/v1/messages/','/api/v1/messages/<int:message_id>/')
 
+api.add_resource(ArticlesAPI,'/api/v1/admin/articles/','/api/v1/admin/articles/<int:article_id>')
+
 if __name__ == '__main__':
     db.create_all()
     app.run(host='0.0.0.0', port=8000)

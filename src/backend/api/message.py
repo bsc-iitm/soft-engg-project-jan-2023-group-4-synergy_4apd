@@ -6,6 +6,30 @@ from flask_restful import Resource
 from backend.models import *   
 
 class MessageAPI(Resource):
+    def post(self):
+        message_data = []
+        if request.headers.get('Content-Type') == 'application/json':
+            message_data = request.get_json()
+        else:
+            return jsonify('Malformed request!',400)
+        
+        text = message_data['text']
+        sender_id = current_user.id
+        ticket_id = message_data['ticket_id']
+        new_message = Message(
+                                text = text,
+                                sender_id = sender_id,
+                                ticket_id = ticket_id,
+                                hidden = False,
+                                flagged = False
+        )
+        try:
+            db.session.add(new_message)
+            db.session.commit()
+            return jsonify('Message created successfully',201)
+        except:
+            return jsonify('Internal server error',500)
+
     def get(self,message_id=None):
         if not message_id:
             start = request.args.get('start')

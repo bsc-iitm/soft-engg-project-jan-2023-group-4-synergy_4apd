@@ -1,7 +1,6 @@
 from flask import request, jsonify
 from flask_security import login_required
 from flask_login import current_user
-import uuid
 from flask_restful import Resource
 from backend.models import *    
 
@@ -15,7 +14,6 @@ class TicketsAPI(Resource):
             return jsonify('Malformed request!',400)
         
         new_ticket = Ticket(
-                            id = uuid.uuid4(),
                             title = ticket_data['title'],
                             status = 'status',
                             votes = 0,
@@ -58,7 +56,13 @@ class TicketsAPI(Resource):
                 return jsonify('Internal server error',500)
 
     def put(self,ticket_id):
-        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        if not ticket_id:
+            return jsonify('Malformed request!',400)
+        try:
+            ticket = Ticket.query.filter_by(id=ticket_id).first()
+        except:
+            return jsonify('Internal server error',500)
+        
         new_ticket_data = []
         if request.headers.get('Content-Type') == 'application/json':
             new_ticket_data = request.get_json()
