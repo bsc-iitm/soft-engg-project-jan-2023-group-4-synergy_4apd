@@ -55,7 +55,7 @@ class TicketsAPI(Resource):
             except:
                 return jsonify('Internal server error',500)
 
-    def put(self,ticket_id):
+    def put(self,ticket_id=None):
         if not ticket_id:
             return jsonify('Malformed request!',400)
         try:
@@ -77,9 +77,11 @@ class TicketsAPI(Resource):
         except:
             return jsonify('Malformed request!',400)
         
-    def delete(self,ticket_id):
-        ticket = Ticket.query.filter_by(id=ticket_id).first()
+    def delete(self,ticket_id=None):
+        if not ticket_id:
+            return jsonify('Malformed request!',400)
         try:
+            ticket = Ticket.query.filter_by(id=ticket_id).first()
             db.session.delete(ticket)
             db.session.commit()
             return jsonify('Ticket deleted successfully',200)
@@ -94,17 +96,3 @@ class MyTicketsAPI(Resource):
             return jsonify(tickets, 200)
         except:
             return jsonify('Internal server error',500)
-
-    
-#class TicketAPI(Resource):
-    '''
-    def individual_ticket(uuid):
-        try:
-            ticket = Ticket.query.filter_by(id=uuid).first()
-        except:
-            return jsonify('Internal server error',500)
-        if ticket.creator != current_user.id:
-            return jsonify('No access rights, forbidden!',403)
-    '''
-    
-    

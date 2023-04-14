@@ -31,10 +31,11 @@ class MessageAPI(Resource):
             return jsonify('Internal server error',500)
 
     def get(self,message_id=None):
-        if not message_id:
+        if message_id:
             start = request.args.get('start')
             count = request.args.get('count')
-            ticket_id = request.args.get('ticket_id')
+            ticket_id = request.args.get('ticket_id')\
+            
             try:
                 messages = Message.query.filter_by(ticket_id=ticket_id,hidden=False).all()
                 return jsonify(messages,200)
@@ -45,8 +46,8 @@ class MessageAPI(Resource):
         
     def delete(self,message_id=None):
         if message_id:
-            message = Message.query.filter_by(id=message_id,hidden=False).first()
             try:
+                message = Message.query.filter_by(id=message_id,hidden=False).first()
                 db.session.delete(message)
                 db.session.commit()
             except:
