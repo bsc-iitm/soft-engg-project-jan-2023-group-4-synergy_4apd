@@ -1,15 +1,15 @@
 # Author: Afnan
 from backend.database import db
+from backend.utils import createUUID
 
 from sqlalchemy.sql import func
-import uuid
 from .tickets_tags import *
 
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
 
-    id = db.Column(db.String, primary_key=True, default=str(uuid.uuid4()))
+    id = db.Column(db.String, primary_key=True, default=createUUID)
     title = db.Column(db.String(25), nullable=False)
 
     status = db.Column(db.Integer, default=0)
