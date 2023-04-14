@@ -4,14 +4,14 @@ from backend.database import db
 
 from sqlalchemy.dialects.sqlite import BLOB
 from flask_security import UserMixin
-
+import uuid
 from .roles_users import *
 
 class User(db.Model,UserMixin):
 	
 	__tablename__="user"
 	
-	id = db.Column("id", db.Integer, primary_key = True)
+	id = db.Column("id", db.String, primary_key = True, default=str(uuid.uuid4()))
 	name = db.Column("name", db.String,nullable = False)
 	email = db.Column("email", db.String, unique = True, nullable = False)
 	password_hash = db.Column("password_hash", db.String, nullable=False)
