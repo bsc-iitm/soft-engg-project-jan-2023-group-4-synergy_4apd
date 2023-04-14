@@ -19,12 +19,10 @@ api = Api(app)
 cors = CORS(app)
 
 api.add_resource(TagAPI,'/api/v1/tags/')
-
 api.add_resource(TicketsAPI,'/api/v1/tickets/','/api/v1/tickets/<int:ticket_id>/')
 api.add_resource(MyTicketsAPI,'/api/v1/mytickets/')
-
 api.add_resource(MessageAPI,'/api/v1/messages/','/api/v1/messages/<int:message_id>/')
-
+api.add_resource(CommentAPI,'/api/v1/admin/comments/','/api/v1/admin/comments/<string:comment_UUID>')
 api.add_resource(ArticlesAPI,'/api/v1/admin/articles/','/api/v1/admin/articles/<int:article_id>')
 
 if __name__ == '__main__':
