@@ -1,7 +1,5 @@
-from flask import request, jsonify
 from flask_security import login_required
 from flask_login import current_user
-import uuid
 from flask_restful import Resource,reqparse
 from backend.models import *
 from backend.utils import stringify_messages

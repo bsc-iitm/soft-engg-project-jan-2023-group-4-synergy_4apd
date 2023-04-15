@@ -1,5 +1,4 @@
 from flask_login import current_user
-import uuid
 from flask_restful import reqparse,Resource
 from flask import jsonify
 from backend.models import *

@@ -1,5 +1,4 @@
 from flask_restful import reqparse,Resource
-from flask import jsonify
 from backend.models import *
 
 create_tag_parser=reqparse.RequestParser()
