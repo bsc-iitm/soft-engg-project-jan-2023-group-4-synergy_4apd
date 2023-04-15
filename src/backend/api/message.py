@@ -2,23 +2,29 @@ from flask import request, jsonify
 from flask_security import login_required
 from flask_login import current_user
 import uuid
-from flask_restful import Resource
-from backend.models import *   
+from flask_restful import Resource,reqparse
+from backend.models import *
+from backend.utils import stringify_messages
+
+create_message_parser=reqparse.RequestParser()
+create_message_parser.add_argument('text',required=True,nullable=False)
+create_message_parser.add_argument('ticket_id',required=True,nullable=False)
+
+get_message_parser=reqparse.RequestParser()
+get_message_parser.add_argument('start',location='args',type=int,required=True,nullable=False)
+get_message_parser.add_argument('count',location='args',type=int,required=True,nullable=False)
+get_message_parser.add_argument('ticket_id',location='args',required=True,nullable=False)
 
 class MessageAPI(Resource):
     def post(self):
-        message_data = []
-        if request.headers.get('Content-Type') == 'application/json':
-            message_data = request.get_json()
-        else:
-            return jsonify('Malformed request!',400)
+        args=create_message_parser.parse_args()
         
-        text = message_data['text']
-        sender_id = current_user.id
-        ticket_id = message_data['ticket_id']
+        text = args.get('text',None)
+        #sender_id = current_user.id
+        ticket_id = args.get('ticket_id',None)
         new_message = Message(
                                 text = text,
-                                sender_id = sender_id,
+                                sender_id = 1,
                                 ticket_id = ticket_id,
                                 hidden = False,
                                 flagged = False
@@ -26,31 +32,63 @@ class MessageAPI(Resource):
         try:
             db.session.add(new_message)
             db.session.commit()
-            return jsonify('Message created successfully',201)
+            return {
+                    'status':201,
+                    'message':'Message created successfully',
+                    'messageID':new_message.id,
+                    'text':new_message.text,
+                    'senderID':new_message.sender_id,
+                    'ticketID':new_message.ticket_id,
+                    'posted_at':str(new_message.posted_at),
+                    'hidden':new_message.hidden,
+                    'flagged':new_message.flagged
+            },201
         except:
-            return jsonify('Internal server error',500)
+            return {'message':'Internal server error'},500
 
     def get(self,message_id=None):
         if message_id:
-            start = request.args.get('start')
-            count = request.args.get('count')
-            ticket_id = request.args.get('ticket_id')\
+            args=get_message_parser.parse_args()
+            start = args.get('start',0)
+            count = args.get('count',None)
+            ticket_id = args.get('ticket_id')
+            print(start,count,ticket_id)
             
             try:
-                messages = Message.query.filter_by(ticket_id=ticket_id,hidden=False).all()
-                return jsonify(messages,200)
+                ticket = Ticket.query.filter_by(id=ticket_id).first()
+                messages = Message.query.filter_by(ticket_id=ticket.id,hidden=False).all()
+
+                if start < 0 or count < 0:
+                    return {'message':'Malformed request!'},400
+                
+                if len(messages) > 10:
+                    if start < len(messages) :
+                        if count < len(messages):
+                            messages = messages[start:start+count+1]
+                        else:
+                            messages = messages[start:]
+
+                return {
+                        'status':200,
+                        'message':'Request successful',
+                        'ticket_id':ticket.id,
+                        'last_response_time':str(ticket.last_response_time),
+                        'messages': stringify_messages(messages)
+                },200
             except:
-                return jsonify('Internal server error',500)
+                return {'message':'Internal server error'},500
         else:
-            return jsonify('No access rights, forbidden!',403)
+            return {'message':'No access rights, forbidden!'},403
         
     def delete(self,message_id=None):
-        if message_id:
-            try:
-                message = Message.query.filter_by(id=message_id,hidden=False).first()
-                db.session.delete(message)
-                db.session.commit()
-            except:
-                return jsonify('Internal server error',500)
-        else:
-            return jsonify('Malformed Request',403)
+        if not message_id:
+            return {'message':'Malformed request!'},400
+        try:
+            message = Message.query.filter_by(id=message_id,hidden=False).first()
+            if not message:
+                return {'message':'Message doesn\'t exist'},404
+            db.session.delete(message)
+            db.session.commit()
+            return {'message':'Message deleted successfully'},200
+        except:
+            return {'message':'Internal server error'},500
