@@ -1,8 +1,6 @@
 # Author: Afnan
 from backend.database import db
-from backend.utils import createUUID
-
-from sqlalchemy.sql import func
+from backend.utils import createUUID, setTime
 from .tickets_tags import *
 
 
@@ -21,6 +19,6 @@ class Ticket(db.Model):
 
     solution = db.Column(db.String, db.ForeignKey('message.id'), nullable=False)
 
-    last_response_time = db.Column(db.DateTime, default=func.now())
+    last_response_time = db.Column(db.DateTime, default=setTime)
 
     tags = db.relationship("Tag", secondary=tickets_tags,backref=db.backref("ticket",lazy="dynamic"))
