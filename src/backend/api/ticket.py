@@ -3,7 +3,7 @@ from flask_security import login_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
-from backend.utils import stringify_tickets, stringify_messages
+from backend.utils import stringify_tickets,stringify_messages,stringify_ticket_tags
 
 create_ticket_parser=reqparse.RequestParser()
 create_ticket_parser.add_argument('title',required=True,nullable=False)
@@ -94,6 +94,7 @@ class TicketsAPI(Resource):
         else:
             try:
                 ticket = Ticket.query.filter_by(id=ticket_id).first()
+                print(ticket.tags)
                 messages = Message.query.filter_by(ticket_id=ticket_id).all()
                 return {
                             'ticketID': ticket.id,
@@ -102,7 +103,8 @@ class TicketsAPI(Resource):
                             'status': ticket.status,
                             'solutionID': ticket.solution,
                             'last_response_time': str(ticket.last_response_time),
-                            'messages': stringify_messages(messages)
+                            'messages': stringify_messages(messages),
+                            'tags': stringify_ticket_tags(ticket.tags)
                         },200
             except:
                 return {'message':'Internal server error'},500

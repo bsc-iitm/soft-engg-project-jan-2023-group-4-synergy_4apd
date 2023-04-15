@@ -12,7 +12,8 @@ def stringify_tickets(tickets):
                             "Votes": ticket.votes,
                             "title": ticket.title,
                             "Status": ticket.status,
-                            "LastResponseTime": str(ticket.last_response_time)
+                            "LastResponseTime": str(ticket.last_response_time),
+                            'tags': stringify_ticket_tags(ticket.tags)
         }
         ticket_list.append(ticket_format)
 
@@ -30,3 +31,10 @@ def stringify_messages(messages):
         message_list.append(message_format)
 
     return message_list
+
+def stringify_ticket_tags(tags):
+    tag_list = []
+    for tag in tags:
+        tag_list.append(tag.name)
+
+    return tag_list
