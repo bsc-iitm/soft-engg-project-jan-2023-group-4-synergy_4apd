@@ -12,12 +12,12 @@ def stringify_tickets(tickets):
     ticket_list = []
     for ticket in tickets:
         ticket_format = {
-                            "ticketID": ticket.id,
+                            "ticket_id": ticket.id,
                             "Votes": ticket.votes,
                             "title": ticket.title,
-                            "Status": ticket.status,
-                            "LastResponseTime": str(ticket.last_response_time),
-                            'tags': stringify_ticket_tags(ticket.tags)
+                            "status": ticket.status,
+                            "last_response_time": str(ticket.last_response_time),
+                            'tags': stringify_tags(ticket.tags)
         }
         ticket_list.append(ticket_format)
 
@@ -27,18 +27,46 @@ def stringify_messages(messages):
     message_list = []
     for message in messages:
         message_format = {
-                            "messageID": message.id,
+                            "message_id": message.id,
                             "text": message.text,
-                            "senderID": message.sender_id,
+                            "sender_id": message.sender_id,
                             "timestamp": str(message.posted_at)
         }
         message_list.append(message_format)
 
     return message_list
 
-def stringify_ticket_tags(tags):
+def stringify_tags(tags):
     tag_list = []
     for tag in tags:
         tag_list.append(tag.name)
 
     return tag_list
+
+def stringify_comments(comments):
+    comment_list = []
+    for comment in comments:
+        comment_format = {
+                            "id" : comment.id,
+                            "content" : comment.content,
+                            "hidden" : comment.hidden
+        }
+        comment_list.append(comment_format)
+
+    return comment_list
+
+def stringify_articles(articles):
+    article_list = []
+    for article in articles:
+        article_format = {
+                            "article_id": article.id,
+                            "title": article.title,
+                            "content": article.content,
+                            "creator": article.creator,
+                            "created_at": str(article.created_at),
+                            "updated_at": str(article.updated_at),
+                            "tags": stringify_tags(article.tags)
+        }
+        article_list.append(article_format)
+
+    return article_list
