@@ -2,7 +2,7 @@ from flask_security import login_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
-from backend.utils import stringify_tickets,stringify_messages,stringify_ticket_tags
+from backend.utils import stringify_tickets,stringify_messages,stringify_tags
 
 create_ticket_parser=reqparse.RequestParser()
 create_ticket_parser.add_argument('title',required=True,nullable=False)
@@ -31,8 +31,7 @@ class TicketsAPI(Resource):
                             is_public = public,
                             creator = 1,
                             assignee = 1,
-                            solution = 0,
-                            #tags = '1,2,3,',
+                            solution = 0
         )
 
         tags = tags.split(",")
@@ -40,7 +39,7 @@ class TicketsAPI(Resource):
             existing_tag = Tag.query.filter_by(name=tag).first()
             if not existing_tag:
                 try:
-                    new_tag = Tag(name = tag)
+                    new_tag = Tag(name=tag)
                     db.session.add(new_tag)
                     db.session.commit()
                 except:
@@ -73,8 +72,9 @@ class TicketsAPI(Resource):
                         "senderID": new_ticket.creator,
                         "senderName": "sender_name",
                         "senderPicture": "<profile_picture>",
+                        'tags': stringify_tags(new_ticket.tags),
                         "timestamp": str(new_ticket.last_response_time)
-                    },201
+            },201
         except:
             return {'message':'Internal server error'},500
         
@@ -103,7 +103,7 @@ class TicketsAPI(Resource):
                             'solutionID': ticket.solution,
                             'last_response_time': str(ticket.last_response_time),
                             'messages': stringify_messages(messages),
-                            'tags': stringify_ticket_tags(ticket.tags)
+                            'tags': stringify_tags(ticket.tags)
                         },200
             except:
                 return {'message':'Internal server error'},500
