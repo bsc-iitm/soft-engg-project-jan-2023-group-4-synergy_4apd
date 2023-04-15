@@ -38,20 +38,22 @@ class TicketsAPI(Resource):
                             solution = 0
         )
 
-        tags = tags.split(",")
-        for tag in tags:
-            existing_tag = Tag.query.filter_by(name=tag).first()
-            if not existing_tag:
-                try:
-                    new_tag = Tag(name=tag)
-                    db.session.add(new_tag)
-                    db.session.commit()
-                except:
-                    return {'message':'Internal server error'},500
-                
-        for tag in tags:
-            existing_tag = Tag.query.filter_by(name=tag).first()
-            new_ticket.tags.append(existing_tag)
+        if tags not in malformed:
+            tags = tags.split(",")
+            print(tags)
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                if not existing_tag:
+                    try:
+                        new_tag = Tag(name=tag)
+                        db.session.add(new_tag)
+                        db.session.commit()
+                    except:
+                        return {'message':'Internal server error'},500
+                    
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                new_ticket.tags.append(existing_tag)
 
         try:
             db.session.add(new_ticket)
