@@ -23,6 +23,10 @@ class TicketsAPI(Resource):
         firstMessage=args.get('firstMessage',None)
         public=args.get('public',True)
         tags=args.get('tags',None)
+
+        malformed=[None,'']
+        if title in malformed or firstMessage in malformed:
+            return {"message":"Malformed request","status":400},400
         
         new_ticket = Ticket(
                             title = title,
@@ -56,11 +60,12 @@ class TicketsAPI(Resource):
                                     text = firstMessage,
                                     sender_id = 1,
                                     ticket_id = new_ticket.id,
-                                    hidden = False,
+                                    hidden = public,
                                     flagged = False
             )
             db.session.add(new_firstMessage)
             db.session.commit()
+            user=User.query.filter_by(id=new_firstMessage.sender_id).first()
             return {
                         "status": 201,
                         "message": "Ticket created successfully",
@@ -70,8 +75,8 @@ class TicketsAPI(Resource):
                         "firstMessage": new_firstMessage.text,
                         "is_public": new_ticket.is_public,
                         "senderID": new_ticket.creator,
-                        "senderName": "sender_name",
-                        "senderPicture": "<profile_picture>",
+                        "senderName": user.name,
+                        "senderPicture": user.profile_pic,
                         'tags': stringify_tags(new_ticket.tags),
                         "timestamp": str(new_ticket.last_response_time)
             },201

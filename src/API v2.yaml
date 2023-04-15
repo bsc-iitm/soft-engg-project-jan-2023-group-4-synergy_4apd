@@ -21,11 +21,13 @@ paths:
         content:
           application/json:
             schema:
-              example:
-                title: Sample Title
-                firstMessage: This is the first message
-                tags: <list_of_tags_from_among_the_available_tags>
-                visibility: public
+              example: >                
+                {
+                "title":"Sample Ticket",
+                "firstMessage":"This is the first message!",
+                "tags":"quiz1,oppe",
+                "public":false
+                }
       responses:
         '201':
           description: Valid ticket created
@@ -34,14 +36,22 @@ paths:
               examples:
                 Valid Ticket Creation:
                   value: >
-                    {"status":201,"message":"Ticket created successfully",
-                    "ticketID":"<UUID_ticket>","title":"Sample Title",
-                    "messageID":"<UUID_first_message>", "firstMessage":"This is the first message",
-                      "visibility":"public",
-                      "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
+                    {
+                    "status": 201,
+                    "message": "Ticket created successfully",
+                    "ticketID": "8afc9edb-ea74-43f5-88af-dc4006bcc755",
+                    "title": "Sample Ticket",
+                    "messageID": "ce77df5b-d044-44a4-987d-4a5d11baf707",
+                    "firstMessage": "This is the first message!",
+                    "is_public": false,
+                    "senderID": "1",
+                    "senderName": "API Tester User",
+                    "senderPicture": null,
+                    "tags": [
+                        "oppe",
+                        "quiz1"
+                    ],
+                    "timestamp": "2023-04-15 20:10:34.927117"
                     }
         '400':
           description: Malformed request
@@ -50,7 +60,10 @@ paths:
               examples:
                 Malformed Request:
                   value: |
-                    {"status":400,"message":"Malformed request!"}
+                    {
+                    "message": "Malformed request",
+                    "status": 400
+                    }
         '403':
           description: Forbidden
           content:

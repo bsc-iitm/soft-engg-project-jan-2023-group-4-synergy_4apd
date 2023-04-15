@@ -15,9 +15,9 @@ class Ticket(db.Model):
     is_public = db.Column(db.Boolean)
 
     creator = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
-    assignee = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    assignee = db.Column(db.String, db.ForeignKey('user.id'))
 
-    solution = db.Column(db.String, db.ForeignKey('message.id'), nullable=False)
+    solution = db.Column(db.String, db.ForeignKey('message.id'))
 
     last_response_time = db.Column(db.DateTime, default=setTime)
 
