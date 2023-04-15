@@ -13,9 +13,6 @@ create_comment_parser.add_argument('hidden',type=bool,default=False,nullable=Fal
 get_comment_parser=reqparse.RequestParser()
 get_comment_parser.add_argument('articleUUID',location='args',required=True)
 
-get_comment_parser=reqparse.RequestParser()
-get_comment_parser.add_argument('articleUUID',location='args',required=True)
-
 
 class CommentAPI(Resource):
     def get(self):
