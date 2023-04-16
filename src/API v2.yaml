@@ -98,30 +98,53 @@ paths:
               examples:
                 Valid Ticket GET Request:
                   value: >
-                    { "status": 200, "message": "Request successful", "tickets":
-                    [
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 6,
-                        "title": "Ticket Title 1",
-                        "Status": "In progress",
-                        "LastResponseTime": "<time_in_format>"
-                      },
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 2,
-                        "title": "Ticket Title 2",
-                        "Status": "Open",
-                        "LastResponseTime": "<time_in_format>"
-                      },
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 2,
-                        "title": "Ticket Title 3",
-                        "Status": "Closed",
-                        "LastResponseTime": "<time_in_format>"
-                      }
-                    ] }
+                    {
+                    "status": 200,
+                    "message": "Request Successful",
+                    "tickets": [
+                        {
+                            "ticket_id": "ce8387e4-34f3-415a-afa1-93093f2b6293",
+                            "Votes": 0,
+                            "title": "Test",
+                            "status": 0,
+                            "last_response_time": "2023-04-15 21:57:51.711095",
+                            "tags": [
+                                "PapaDelta",
+                                "Afnan",
+                                "Tony",
+                                "Stark"
+                            ]
+                        },
+                        {
+                            "ticket_id": "c600ba6e-e3ea-4aa2-b291-d9f8ccb0637e",
+                            "Votes": 0,
+                            "title": "TestTicket2",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:19:45.491777",
+                            "tags": []
+                        },
+                        {
+                            "ticket_id": "ca1be183-8737-4ede-9588-7c0013d5d23b",
+                            "Votes": 0,
+                            "title": "TestTicket3",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:20:01.455312",
+                            "tags": [
+                                "oppe"
+                            ]
+                        },
+                        {
+                            "ticket_id": "ed5be7ae-bf47-4e21-8887-191d651a7f7d",
+                            "Votes": 0,
+                            "title": "TestTicket4",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:20:14.569626",
+                            "tags": [
+                                "quiz2"
+                            ]
+                        }
+                      ]
+                    }
         '400':
           description: Malformed request
           content:
@@ -166,33 +189,43 @@ paths:
               examples:
                 Valid Ticket GET Request:
                   value: >
-                    { "status": 200, "message": "Request successful", "tickets":
-                    [
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 6,
-                        "title": "Ticket Title 1",
-                        "Status": "In progress",
-                        "Visibility": "Public",
-                        "LastResponseTime": "<time_in_format>"
-                      },
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 6,
-                        "title": "Ticket Title 1",
-                        "Status": "In progress",
-                        "Visibility": "Public",
-                        "LastResponseTime": "<time_in_format>"
-                      },
-                      {
-                        "ticketID":"<UUID_ticket>",
-                        "Votes": 6,
-                        "title": "Ticket Title 1",
-                        "Status": "In progress",
-                        "Visibility": "Public",
-                        "LastResponseTime": "<time_in_format>"
-                      }
-                    ] }
+                    {
+                    "status": 200,
+                    "message": "Request Successful",
+                    "tickets": [
+                        {
+                            "ticket_id": "c600ba6e-e3ea-4aa2-b291-d9f8ccb0637e",
+                            "Votes": 0,
+                            "title": "TestTicket2",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:19:45.491777",
+                            "is_public":true,
+                            "tags": []
+                        },
+                        {
+                            "ticket_id": "ca1be183-8737-4ede-9588-7c0013d5d23b",
+                            "Votes": 0,
+                            "title": "TestTicket3",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:20:01.455312",
+                            "is_public":false,
+                            "tags": [
+                                "oppe"
+                            ]
+                        },
+                        {
+                            "ticket_id": "ed5be7ae-bf47-4e21-8887-191d651a7f7d",
+                            "Votes": 0,
+                            "title": "TestTicket4",
+                            "status": 0,
+                            "last_response_time": "2023-04-16 13:20:14.569626",
+                            "is_public":false,
+                            "tags": [
+                                "quiz2"
+                            ]
+                        }
+                      ]
+                    }
         '400':
           description: Malformed request
           content:
@@ -237,40 +270,27 @@ paths:
               examples:
                 Valid Ticket GET Request:
                   value: >
-                    { "status": 200, "message": "Request successful",
-                    "ticketID":"<UUID_ticket>",
-                      "Votes": 6,
-                      "title": "Ticket Title 1",
-                      "Status": "In progress",
-                      "solutionID":"<UUID_message> if marked as solution",
-                      "LastResponseTime": "<time_in_format>",
-                      "messages":[
-                        {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
-                      },
-                      {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
-                      },
-                      {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
-                      }
+                    {
+                      "ticketID": "ce8387e4-34f3-415a-afa1-93093f2b6293",
+                      "votes": 0,
+                      "title": "Test",
+                      "status": 0,
+                      "solutionID": "0",
+                      "last_response_time": "2023-04-15 21:57:51.711095",
+                      "messages": [
+                          {
+                              "message_id": "a7d4dbf7-b937-480e-ae83-c608ea919841",
+                              "text": "Test",
+                              "sender_id": "1",
+                              "timestamp": "2023-04-15 21:57:51.737432"
+                          }
+                      ],
+                      "tags": [
+                          "PapaDelta",
+                          "Afnan",
+                          "Tony",
+                          "Stark"
                       ]
-
                     }
         '400':
           description: Malformed request
