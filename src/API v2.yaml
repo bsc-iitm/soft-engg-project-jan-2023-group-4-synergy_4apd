@@ -385,7 +385,19 @@ paths:
               examples:
                 Valid Ticket Deletion:
                   value: |
-                    {"status":200,"message":"Ticket deleted successfully"}
+                    {
+                      "message": "Ticket and associated messages deleted successfully"
+                    }
+        '404':
+          description: Ticket not found
+          content:
+            application/json:
+              examples:
+                Invalid Ticket ID Deletion:
+                  value: |
+                    {
+                      "message": "Ticket doesn't exist"
+                    }
         '400':
           description: Malformed request
           content:
@@ -500,6 +512,76 @@ paths:
                 Internal Server Error:
                   value: |
                     {"status":500,"message":"Internal server error"}
+      
+    post:
+      summary: Creating a new message
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example: >                
+                {
+                  "text":"TestTicket5 Messagde20",
+                  "ticket_id":"e78c6f74-169b-4e72-a576-9be89a01cda7"
+                }
+      responses:
+        '200':
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Message POST Request:
+                  value: >
+                   {
+                      "status": 201,
+                      "message": "Message created successfully",
+                      "messageID": "7aa4ad42-ee9d-4d19-a4f5-968307093912",
+                      "text": "TestTicket5 Messagde20",
+                      "senderID": "1",
+                      "ticketID": "e78c6f74-169b-4e72-a576-9be89a01cda7",
+                      "posted_at": "2023-04-16 18:38:26.032573",
+                      "hidden": false,
+                      "flagged": false
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"status":400,"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        '404':
+          description: Associated ticket not found
+          content:
+            application/json:
+              examples:
+                Wrong Ticket UUID supplied:
+                  value: |
+                    {"status":404,"message":"Associated ticket not found!"}
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
 
   /api/v1/messages/<UUID_message>:
     summary: Messages API Endpoint
@@ -521,10 +603,18 @@ paths:
               examples:
                 Valid Message DELETE Request:
                   value: >
-                    { "status": 200, "message": "Request successful",
-                      "messageID":"<UUID_message>",
-                      "LastResponseTime": "<time_in_format>"
-                      
+                    {
+                      "message": "Message deleted successfully"
+                    }
+        '404':
+          description: Message not found
+          content:
+            application/json:
+              examples:
+                Invalid Message DELETE Request:
+                  value: >
+                    {
+                        "message": "Message doesn't exist"
                     }
         '400':
           description: Malformed request

@@ -60,7 +60,7 @@ class CommentAPI(Resource):
             return {"status":201,"message":"Request successful"},201
         else:
             if ArticleExistsCheck is None:
-                return {"status":400,"message":"Article doesn't exist!"},400
+                return {"status":404,"message":"Article doesn't exist!"},404
             if CommentExistsCheck is not None:
                 return {"status":400,"message":"Comment already exists!"},400
         

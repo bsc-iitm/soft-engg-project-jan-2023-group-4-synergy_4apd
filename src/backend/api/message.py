@@ -20,6 +20,19 @@ class MessageAPI(Resource):
         text = args.get('text',None)
         #sender_id = current_user.id
         ticket_id = args.get('ticket_id',None)
+
+        malformed=[None,'']
+        if text in malformed or ticket_id in malformed:
+            return {"message":"Malformed request","status":400},400
+
+        TicketExistsCheck=Ticket.query.filter_by(id=ticket_id).first()
+        if TicketExistsCheck is None:
+                return {"status":404,"message":"Associated ticket not found!"},404
+
+        #Implement MessageExistsCheck upon implementation of Flask_Security
+        #MessageExistsCheck=Message.query.filter_by(content=content,article_id=article_id).first()
+
+
         new_message = Message(
                                 text = text,
                                 sender_id = 1,
