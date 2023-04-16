@@ -7,6 +7,7 @@ from backend.utils import stringify_articles,stringify_comments,stringify_tags
 create_article_parser=reqparse.RequestParser()
 create_article_parser.add_argument('title',required=True,nullable=False)
 create_article_parser.add_argument('content',required=True,nullable=False)
+create_article_parser.add_argument('tags',nullable=True)
 
 put_article_parser=reqparse.RequestParser()
 put_article_parser.add_argument('title',required=True,nullable=False)
@@ -22,26 +23,31 @@ class ArticlesAPI(Resource):
         content=args.get('content',None)
         tags=args.get('tags',None)
 
+        malformed=[None,'']
+        if title in malformed or content in malformed:
+            return {"message":"Malformed request","status":400},400
+
         new_article = Article(
                                 title = title,
                                 content = content,
                                 creator = 1,#current_user.id,
         )
 
-        tags = tags.split(",")
-        for tag in tags:
-            existing_tag = Tag.query.filter_by(name=tag).first()
-            if not existing_tag:
-                try:
-                    new_tag = Tag(name=tag)
-                    db.session.add(new_tag)
-                    db.session.commit()
-                except:
-                    return {'message':'Internal server error'},500
-                
-        for tag in tags:
-            existing_tag = Tag.query.filter_by(name=tag).first()
-            new_article.tags.append(existing_tag)
+        if tags not in malformed:    
+            tags = tags.split(",")
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                if not existing_tag:
+                    try:
+                        new_tag = Tag(name=tag)
+                        db.session.add(new_tag)
+                        db.session.commit()
+                    except:
+                        return {'message':'Internal server error'},500
+                    
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                new_article.tags.append(existing_tag)
 
         try:
             db.session.add(new_article)
@@ -74,6 +80,8 @@ class ArticlesAPI(Resource):
         else:
             try:
                 article = Article.query.filter_by(id=article_id).first()
+                if not article:
+                    return {"message":"Article doesn't exist"},404
                 comments = Comment.query.filter_by(article_id=article.id).all()
                 return {
                         "article_id" : article.id,
@@ -120,7 +128,7 @@ class ArticlesAPI(Resource):
         try:
             article = Article.query.filter_by(id=article_id).first()
             if not article:
-                return {'message':'Article doesn\'t exist'},404
+                return {"message":"Article doesn't exist"},404
             db.session.delete(article)
             db.session.commit()
             return {'message':'Article deleted successfully'},200

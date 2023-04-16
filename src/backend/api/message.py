@@ -97,7 +97,7 @@ class MessageAPI(Resource):
         try:
             message = Message.query.filter_by(id=message_id,hidden=False).first()
             if not message:
-                return {'message':'Message doesn\'t exist'},404
+                return {"message":"Message doesn't exist"},404
             db.session.delete(message)
             db.session.commit()
             return {'message':'Message deleted successfully'},200

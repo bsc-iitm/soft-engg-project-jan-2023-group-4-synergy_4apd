@@ -4,7 +4,7 @@ info:
   version: 1.0.11
   description: >
 servers:
-  - url: http://localhost:5000
+  - url: http://localhost:8000
 paths:
   "/api/v1/tickets":
     summary: TICKET API ENDPOINT - Standard Users
@@ -658,9 +658,9 @@ paths:
           application/json:
             schema:
               example:   # Sample object
-                title: "Article Title"
-                content: "Article Content"
-                visibility: "public"
+                title: "NewArticleTestYAML"
+                content: "NewArticleTestYAML Content"
+                tags: "ArticleTag1,ArticleTag2"
             
       responses:
         201:
@@ -671,10 +671,18 @@ paths:
                 Valid Article Creation:
                   value: 
                     {
-                      "status":201,
-                      "content":"Article created successfully",
-                      "articleID":"<UUID_article>",
-                      "title":"Article Title"
+                      "status": 201,
+                      "article_id": "19942633-3f6c-432c-9cd5-d5efe66e5613",
+                      "message": "Article created successfully",
+                      "title": "NewArticleTestYAML ",
+                      "content": "NewArticleTestYAML Content",
+                      "created_at": "2023-04-16 22:08:31.194673",
+                      "creator": "1",
+                      "tags": [
+                          "ArticleTag1",
+                          "ArticleTag2"
+                      ],
+                      "updated_at": "2023-04-16 22:08:31.194690"
                     }
         400:
           description: Malformed request
@@ -733,35 +741,62 @@ paths:
                 Valid Article GET Request:
                   value: 
                     {
-                      "status": 200,
-                      "message": "Request successful",
-                      "articles": [
-                        {
-                          "articleID":"<UUID_article>",
-                          "title": "Article Title 1",
-                          "content": "Article Content 1",
-                          "creator": "Article Creator 1",
-                          "created_at":"Article Creation Timestamp 1",
-                          "updated_at":"Article Updation Timestamp 1"
-                        },
-                        {
-                          "articleID":"<UUID_article>",
-                          "title": "Article Title 2",
-                          "content": "Article Content 2",
-                          "creator": "Article Creator 2",
-                          "created_at":"Article Creation Timestamp 2",
-                          "updated_at":"Article Updation Timestamp 2"
-                        },
-                        {
-                          "articleID":"<UUID_article>",
-                          "title": "Article Title 3",
-                          "content": "Article Content 3",
-                          "creator": "Article Creator 3",
-                          "created_at":"Article Creation Timestamp 3",
-                          "updated_at":"Article Updation Timestamp 3"
-                        },
-                      ]
-                    }
+                        "status": 200,
+                        "message": "Request successful",
+                        "articles": [
+                            {
+                                "article_id": "d17c1c34-c692-4f86-87bd-fab46b2cd5b0",
+                                "title": "NewArticleTest",
+                                "content": "NewArticleTest Content",
+                                "creator": "1",
+                                "created_at": "2023-04-16 21:55:31.509069",
+                                "updated_at": "2023-04-16 21:55:31.509084",
+                                "tags": []
+                            },
+                            {
+                                "article_id": "8fb4a58b-5dc2-48c2-84bb-2df5e83aa1c8",
+                                "title": "NewArticleTest2",
+                                "content": "NewArticleTest2 Content",
+                                "creator": "1",
+                                "created_at": "2023-04-16 21:56:54.429850",
+                                "updated_at": "2023-04-16 21:56:54.429866",
+                                "tags": []
+                            },
+                            {
+                                "article_id": "c523b27f-7125-4e66-9e40-a5e2e888c5c0",
+                                "title": "NewArticleTest2",
+                                "content": "NewArticleTest2 Content",
+                                "creator": "1",
+                                "created_at": "2023-04-16 21:58:38.715062",
+                                "updated_at": "2023-04-16 21:58:38.715080",
+                                "tags": []
+                            },
+                            {
+                                "article_id": "94bca31c-722c-4dee-8811-57d8fc089d40",
+                                "title": "NewArticleTest2",
+                                "content": "NewArticleTest2 Content",
+                                "creator": "1",
+                                "created_at": "2023-04-16 21:59:59.727358",
+                                "updated_at": "2023-04-16 21:59:59.727375",
+                                "tags": [
+                                    "ArticleTag1",
+                                    "ArticleTag2"
+                                ]
+                            },
+                            {
+                                "article_id": "19942633-3f6c-432c-9cd5-d5efe66e5613",
+                                "title": "NewArticleTestYAML ",
+                                "content": "NewArticleTestYAML Content",
+                                "creator": "1",
+                                "created_at": "2023-04-16 22:08:31.194673",
+                                "updated_at": "2023-04-16 22:08:31.194690",
+                                "tags": [
+                                    "ArticleTag1",
+                                    "ArticleTag2"
+                                ]
+                            }
+                        ]
+                      }
         400:
           description: Malformed request
           content:
@@ -855,6 +890,14 @@ paths:
                       "status":403,
                       "message":"No access rights, forbidden!"
                     }
+        404:
+          description: Associated ticket not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Article doesn't exist!"}
         500:
           description: Internal server error
           content:
@@ -916,6 +959,14 @@ paths:
                       "status":403,
                       "message":"No access rights, forbidden!"
                     }
+        404:
+          description: Associated article not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Article doesn't exist!"}
         500:
           description: Internal server error
           content:
@@ -948,9 +999,7 @@ paths:
                 Valid Article Deletion:
                   value: 
                     {
-                      "status":200,
-                      "message":"Article deleted successfully",
-                      "articleID":"<UUID_article>"
+                        "message": "Article deleted successfully"
                     }
         400:
           description: Malformed request
@@ -1005,9 +1054,9 @@ paths:
           application/json:
             schema:
               example:   # Sample object
-                article_id: "<UUID_Article>"
-                content: "Comment content"
-                hidden: "Boolean value"
+                articleUUID: "44013aaf-46e4-4e78-8c4c-6be0d0a828cf"
+                content: "Comment POST API TEST"
+                hidden: false
             
       responses:
         201:
@@ -1018,11 +1067,11 @@ paths:
                 Valid Comment Creation:
                   value: 
                     {
-                      "status":201,
-                      "message":"Comment created successfully",
-                      "articleID":"<UUID_article>",
-                      "commentID":"<UUID_comment>",
-                      "content":"Comment content"
+                      "status": 201,
+                      "message": "Request successful",
+                      "articleID": "44013aaf-46e4-4e78-8c4c-6be0d0a828cf",
+                      "commentID": "aa29fa82-3b7e-494a-aef9-64a424ced6c6",
+                      "content": "Comment POST API TEST"
                     }
         400:
           description: Malformed request
@@ -1035,7 +1084,7 @@ paths:
                       "status":400,
                       "message":"Malformed request!"
                       
-                    }
+                    }                
         403:
           description: Forbidden
           content:
@@ -1048,6 +1097,15 @@ paths:
                       "message":"No access rights, forbidden!"
                       
                     }
+        404:
+          description: Associated article not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Article doesn't exist!"}
+
         500:
           description: Internal server error
           content:
@@ -1088,22 +1146,26 @@ paths:
                     {
                       "status": 200,
                       "message": "Request successful",
-                      "articleID":"<UUID_article>",
-                      "articles": [
-                        {
-                          "commentID":"<UUID_comment_1>",
-                          "content":"Comment content 1"
-                        },
-                        {
-                          "commentID":"<UUID_comment_2>",
-                          "content":"Comment content 2"
-                        },
-                        {
-                          "commentID":"<UUID_comment_3>",
-                          "content":"Comment content 3"
-                        },
+                      "articleID": "44013aaf-46e4-4e78-8c4c-6be0d0a828cf",
+                      "comments": [
+                          {
+                              "id": "aa29fa82-3b7e-494a-aef9-64a424ced6c6",
+                              "content": "Comment POST API TEST"
+                          },
+                          {
+                              "id": "7e42fcc6-2fde-4669-8718-0d25f74eefc4",
+                              "content": "Comment POST API TEST1"
+                          },
+                          {
+                              "id": "b502169d-b2ad-414b-9c2d-c26520633d83",
+                              "content": "Comment POST API TEST2"
+                          },
+                          {
+                              "id": "b329ea94-bf55-4b33-9b4e-fd39ce30bc0c",
+                              "content": "Comment POST API TEST3"
+                          }
                       ]
-                    }
+                  }
         400:
           description: Malformed request
           content:
@@ -1128,6 +1190,14 @@ paths:
                       "message":"No access rights, forbidden!"
                       
                     }
+        404:
+          description: Associated article not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Article doesn't exist!"}
         500:
           description: Internal server error
           content:
@@ -1140,8 +1210,11 @@ paths:
                       "message":"Internal server error"
                       
                     }
+  /api/v1/admin/comments/<commentUUID>:
+    summary: COMMENT API ENDPOINT - Admins ONLY    
+    
     delete:
-      summary: Deleting all comments of a particular article
+      summary: Delete a particular comment
       description: ''
       operationId: ''
       parameters: 
@@ -1149,17 +1222,12 @@ paths:
           name: Authorization
           schema:
             type: string
-          required: true
-        - in: query
-          name: commentUUID
-          schema:
-            type: string
-          required: true
+          required: true        
       
             
       responses:
         200:
-          description: Request successful
+          description: Deletion successful
           content:
             application/json:
               examples:
@@ -1167,15 +1235,7 @@ paths:
                   value: 
                     {
                       "status": 200,
-                      "message": "Request successful",
-                      "deleted_comment_IDs":
-                      {
-                        [
-                          "<UUID_comment_1>",
-                          "<UUID_comment_2>",
-                          "<UUID_comment_3>"
-                        ]
-                      }
+                      "message": "Deletion successful!"
                     }
         400:
           description: Malformed request
@@ -1201,6 +1261,15 @@ paths:
                       "message":"No access rights, forbidden!"
                       
                     }
+        404:
+          description: Comment not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Comment doesn't exist!"}
+        
         500:
           description: Internal server error
           content:

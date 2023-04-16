@@ -40,7 +40,6 @@ class TicketsAPI(Resource):
 
         if tags not in malformed:
             tags = tags.split(",")
-            print(tags)
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 if not existing_tag:
@@ -100,7 +99,8 @@ class TicketsAPI(Resource):
         else:
             try:
                 ticket = Ticket.query.filter_by(id=ticket_id).first()
-                print(ticket.tags)
+                if not tickets:
+                    return {"message":"Ticket doesn't exist"},404
                 messages = Message.query.filter_by(ticket_id=ticket_id).all()
                 return {
                             'ticketID': ticket.id,
@@ -121,7 +121,7 @@ class TicketsAPI(Resource):
         try:
             ticket = Ticket.query.filter_by(id=ticket_id).first()
             if not ticket:
-                return {'message':'Ticket doesn\'t exist'},404
+                return {"message":"Ticket doesn't exist"},404
         except:
             return {'message':'Internal server error'},500
         
@@ -145,7 +145,7 @@ class TicketsAPI(Resource):
         try:
             ticket = Ticket.query.filter_by(id=ticket_id).first()
             if not ticket:
-                return {'message':'Ticket doesn\'t exist'},404
+                return {"message":"Ticket doesn't exist"},404
             
             messages = Message.query.filter_by(ticket_id=ticket_id).all()
             if messages:

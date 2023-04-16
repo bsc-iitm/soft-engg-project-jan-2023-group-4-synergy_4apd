@@ -24,9 +24,14 @@ class CommentAPI(Resource):
             return {"message":"Malformed request","status":400},400
 
         else:
+            
+            articleCheck=Article.query.filter_by(id=articleUUID).first()
+            if articleCheck is None:
+                return {"status":404,"message":"Article doesn't exist!"},404
+
             comment=Comment.query.filter_by(article_id=articleUUID,hidden=False).all()
 
-            if comment is None:
+            if len(comment) == 0:
                 return {"message":"No comments for the article","status":200},200
             
             else:
@@ -57,7 +62,10 @@ class CommentAPI(Resource):
             newComment=Comment(article_id=article_id,content=content,hidden=hidden)
             db.session.add(newComment)
             db.session.commit()
-            return {"status":201,"message":"Request successful"},201
+            return {"status":201,"message":"Request successful",
+                    "articleID":article_id,
+                    "commentID":newComment.id,
+                    "content":newComment.content},201
         else:
             if ArticleExistsCheck is None:
                 return {"status":404,"message":"Article doesn't exist!"},404
@@ -74,7 +82,7 @@ class CommentAPI(Resource):
         x=Comment.query.filter_by(id=comment_UUID).first()
 
         if x==None:
-            return {"status":400,"message":"Comment doesn't exist!"},400
+            return {"status":404,"message":"Comment doesn't exist!"},404
         else:
             db.session.delete(x)
             db.session.commit()
