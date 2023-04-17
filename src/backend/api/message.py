@@ -42,6 +42,7 @@ class MessageAPI(Resource):
         )
         try:
             db.session.add(new_message)
+            TicketExistsCheck.last_response_time=datetime.now()
             db.session.commit()
             return {
                     'status':201,

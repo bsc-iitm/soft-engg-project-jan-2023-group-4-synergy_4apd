@@ -61,6 +61,7 @@ class CommentAPI(Resource):
         if ArticleExistsCheck is not None and CommentExistsCheck is None:
             newComment=Comment(article_id=article_id,content=content,hidden=hidden)
             db.session.add(newComment)
+            ArticleExistsCheck.updated_at=datetime.now()
             db.session.commit()
             return {"status":201,"message":"Request successful",
                     "articleID":article_id,

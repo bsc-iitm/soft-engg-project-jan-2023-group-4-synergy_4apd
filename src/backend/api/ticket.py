@@ -11,8 +11,14 @@ create_ticket_parser.add_argument('public',type=bool,required=True,nullable=Fals
 create_ticket_parser.add_argument('tags',nullable=True)
 
 put_ticket_parser=reqparse.RequestParser()
-put_ticket_parser.add_argument('title',required=True,nullable=False)
-put_ticket_parser.add_argument('public',type=bool,required=True,nullable=False)
+put_ticket_parser.add_argument('title',nullable=False)
+put_ticket_parser.add_argument('public',type=bool,nullable=False,default=False)
+put_ticket_parser.add_argument('status',type=int,nullable=False)
+put_ticket_parser.add_argument('solution',nullable=False)
+put_ticket_parser.add_argument('tags',nullable=False)
+put_ticket_parser.add_argument('votes',type=int,nullable=False)
+put_ticket_parser.add_argument('assignee',nullable=False)
+
 
 class TicketAPI(Resource):
     
@@ -116,28 +122,62 @@ class TicketAPI(Resource):
                 return {'message':'Internal server error'},500
 
     def put(self,ticket_id=None):
-        if not ticket_id:
+
+        malformed=[None,'']
+        if ticket_id in malformed:
             return {'message':'Malformed request!'},400
-        try:
-            ticket = Ticket.query.filter_by(id=ticket_id).first()
-            if not ticket:
-                return {"message":"Ticket doesn't exist"},404
-        except:
-            return {'message':'Internal server error'},500
         
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        if not ticket:
+            return {"message":"Ticket doesn't exist"},404
+    
         args=put_ticket_parser.parse_args()
 
-        title=args.get('title',None)
-        public=args.get('public',True)
+        title=args.get('title',ticket.title)
+        public=args.get('public',ticket.is_public)
+        status=args.get('status',ticket.status)
+        solution=args.get('solution',ticket.solution)
+        tags=args.get('tags',None)
+        votes=args.get('votes',ticket.votes)
+        assignee=args.get('assignee',ticket.assignee)
 
-        try:
-            ticket.title = title
-            ticket.is_public = public
-            db.session.commit()
-            return {'message':'Ticket modified successfully'},200
-        except:
-            return {'message':'Internal server error'},500
+
+        if tags not in malformed:
+            tags = tags.split(",")
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                if not existing_tag:
+                    try:
+                        new_tag = Tag(name=tag)
+                        db.session.add(new_tag)
+                        db.session.commit()
+                    except:
+                        return {'message':'Internal server error'},500
+            
+            ticket.tags=[]
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                ticket.tags.append(existing_tag)
         
+        if tags=="":
+            ticket.tags=[]
+        
+        ticket.title = title
+        ticket.is_public = public
+        ticket.status=status
+        ticket.solution=solution
+        ticket.votes=votes
+        ticket.assignee=assignee
+
+        db.session.commit()
+        
+        ticket = Ticket.query.filter_by(id=ticket_id).all()
+
+        return {'message':'Ticket modified successfully',"ticket":stringify_tickets(ticket)},200
+        
+
+
+
     def delete(self,ticket_id=None):
         print(ticket_id)
         if not ticket_id:

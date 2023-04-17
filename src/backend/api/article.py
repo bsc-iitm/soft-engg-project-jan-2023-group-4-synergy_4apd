@@ -12,6 +12,7 @@ create_article_parser.add_argument('tags',nullable=True)
 put_article_parser=reqparse.RequestParser()
 put_article_parser.add_argument('title',required=True,nullable=False)
 put_article_parser.add_argument('content',required=True,nullable=False)
+put_article_parser.add_argument('tags',nullable=False)
 
 
 class ArticleAPI(Resource):
@@ -97,29 +98,55 @@ class ArticleAPI(Resource):
                 return {'message':'Internal server error'},500
             
     def put(self,article_id=None):
-        if not article_id:
+
+        malformed=[None,'']
+        if article_id in malformed:
             return {'message':'Malformed request!'},400
         
-        try:
-            article = Article.query.filter_by(id=article_id).first()
-            if not article:
-                return {'message':'Article doesn\'t exist'},404
-        except:
-            return {'message':'Internal server error'},500
+        article = Article.query.filter_by(id=article_id).first()
+        if not article:
+            return {"message":"Article doesn't exist"},404
         
         args = put_article_parser.parse_args()
+            
+        title = args.get('title',article.title)
+        content = args.get('content',article.content)
+        tags = args.get('tags',None)
 
-        title = args.get('title',None)
-        content = args.get('title',None)
         
-        try:
-            article.title = title
-            article.content = content
-            article.updated_at = datetime.now()
-            db.session.commit()
-            return {'message':'Article modified successfully'},200
-        except:
+        if title in malformed or content in malformed:
             return {'message':'Malformed request!'},400
+        
+        article.title = title
+        article.content = content
+        article.updated_at = datetime.now()
+      
+        
+        if tags not in malformed:
+            tags = tags.split(",")
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                if not existing_tag:
+                    try:
+                        new_tag = Tag(name=tag)
+                        db.session.add(new_tag)
+                        db.session.commit()
+                    except:
+                        return {'message':'Internal server error'},500
+            
+            article.tags=[]
+            for tag in tags:
+                existing_tag = Tag.query.filter_by(name=tag).first()
+                article.tags.append(existing_tag)
+        
+        if tags=="":
+            article.tags=[]
+
+        db.session.commit()
+
+        article = Article.query.filter_by(id=article_id).all()
+        return {'message':'Article modified successfully',"article":stringify_articles(article)},200
+
         
     def delete(self,article_id=None):
         if not article_id:
