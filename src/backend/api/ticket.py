@@ -50,14 +50,11 @@ class TicketAPI(Resource):
                 if not existing_tag:
                     new_tag = Tag(name=tag)
                     db.session.add(new_tag)
-                    db.session.commit()
-                    
-            for tag in tags:
-                existing_tag = Tag.query.filter_by(name=tag).first()
-                new_ticket.tags.append(existing_tag)
+                    new_ticket.tags.append(new_tag)
+                else:
+                    new_ticket.tags.append(existing_tag)
 
         db.session.add(new_ticket)
-        db.session.commit()
         new_firstMessage = Message(
                                 text = firstMessage,
                                 sender_id = current_user.id,
@@ -65,7 +62,6 @@ class TicketAPI(Resource):
         )
         db.session.add(new_firstMessage)
         db.session.commit()
-        user=User.query.filter_by(id=new_firstMessage.sender_id).first()
         return {
                 "status": 201,
                 "message": "Ticket created successfully",
@@ -75,8 +71,8 @@ class TicketAPI(Resource):
                 "firstMessage": new_firstMessage.text,
                 "is_public": new_ticket.is_public,
                 "senderID": new_ticket.creator,
-                "senderName": user.name,
-                "senderPicture": user.profile_pic,
+                "senderName": current_user.name,
+                "senderPicture": current_user.profile_pic,
                 'tags': stringify_tags(new_ticket.tags),
                 "timestamp": str(new_ticket.last_response_time)
         },201
