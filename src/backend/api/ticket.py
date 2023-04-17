@@ -1,4 +1,4 @@
-from flask_security import login_required
+from flask_security import login_required, auth_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -22,6 +22,7 @@ put_ticket_parser.add_argument('assignee',nullable=False)
 
 class TicketAPI(Resource):
     
+    @auth_required("token")
     def post(self):
         args=create_ticket_parser.parse_args()
 
@@ -39,9 +40,7 @@ class TicketAPI(Resource):
                             status = 0,
                             votes = 0,
                             is_public = public,
-                            creator = 1,
-                            assignee = 1,
-                            solution = 0
+                            creator = current_user.id
         )
 
         if tags not in malformed:
@@ -49,77 +48,66 @@ class TicketAPI(Resource):
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 if not existing_tag:
-                    try:
-                        new_tag = Tag(name=tag)
-                        db.session.add(new_tag)
-                        db.session.commit()
-                    except:
-                        return {'message':'Internal server error'},500
+                    new_tag = Tag(name=tag)
+                    db.session.add(new_tag)
+                    db.session.commit()
                     
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 new_ticket.tags.append(existing_tag)
 
-        try:
-            db.session.add(new_ticket)
-            db.session.commit()
-            new_firstMessage = Message(
-                                    text = firstMessage,
-                                    sender_id = 1,
-                                    ticket_id = new_ticket.id,
-                                    hidden = public,
-                                    flagged = False
-            )
-            db.session.add(new_firstMessage)
-            db.session.commit()
-            user=User.query.filter_by(id=new_firstMessage.sender_id).first()
-            return {
-                        "status": 201,
-                        "message": "Ticket created successfully",
-                        "ticketID": new_ticket.id,
-                        "title": new_ticket.title,
-                        "messageID": new_firstMessage.id,
-                        "firstMessage": new_firstMessage.text,
-                        "is_public": new_ticket.is_public,
-                        "senderID": new_ticket.creator,
-                        "senderName": user.name,
-                        "senderPicture": user.profile_pic,
-                        'tags': stringify_tags(new_ticket.tags),
-                        "timestamp": str(new_ticket.last_response_time)
-            },201
-        except:
-            return {'message':'Internal server error'},500
+        db.session.add(new_ticket)
+        db.session.commit()
+        new_firstMessage = Message(
+                                text = firstMessage,
+                                sender_id = current_user.id,
+                                ticket_id = new_ticket.id,
+                                hidden = public,
+                                flagged = False
+        )
+        db.session.add(new_firstMessage)
+        db.session.commit()
+        user=User.query.filter_by(id=new_firstMessage.sender_id).first()
+        return {
+                "status": 201,
+                "message": "Ticket created successfully",
+                "ticketID": new_ticket.id,
+                "title": new_ticket.title,
+                "messageID": new_firstMessage.id,
+                "firstMessage": new_firstMessage.text,
+                "is_public": new_ticket.is_public,
+                "senderID": new_ticket.creator,
+                "senderName": user.name,
+                "senderPicture": user.profile_pic,
+                'tags': stringify_tags(new_ticket.tags),
+                "timestamp": str(new_ticket.last_response_time)
+        },201
         
             
     def get(self,ticket_id=None):
         if not ticket_id:
-            try:
-                tickets = Ticket.query.filter_by(is_public=True).all()
-                return {
-                            'status':200,
-                            'message':'Request Successful',
-                            'tickets':stringify_tickets(tickets)
-                        },200
-            except:
-                return {'message':'Internal server error'},500
+            tickets = Ticket.query.filter_by(is_public=True).all()
+            return {
+                    'status':200,
+                    'message':'Request Successful',
+                    'tickets':stringify_tickets(tickets)
+            },200
         else:
-            try:
-                ticket = Ticket.query.filter_by(id=ticket_id).first()
-                if not tickets:
-                    return {"message":"Ticket doesn't exist"},404
-                messages = Message.query.filter_by(ticket_id=ticket_id).all()
-                return {
-                            'ticketID': ticket.id,
-                            'votes': ticket.votes,
-                            'title': ticket.title,
-                            'status': ticket.status,
-                            'solutionID': ticket.solution,
-                            'last_response_time': str(ticket.last_response_time),
-                            'messages': stringify_messages(messages),
-                            'tags': stringify_tags(ticket.tags)
-                        },200
-            except:
-                return {'message':'Internal server error'},500
+            ticket = Ticket.query.filter_by(id=ticket_id).first()
+            if not ticket:
+                return {"message":"Ticket doesn't exist"},404
+            
+            messages = Message.query.filter_by(ticket_id=ticket_id).all()
+            return {
+                    'ticketID': ticket.id,
+                    'votes': ticket.votes,
+                    'title': ticket.title,
+                    'status': ticket.status,
+                    'solutionID': ticket.solution,
+                    'last_response_time': str(ticket.last_response_time),
+                    'messages': stringify_messages(messages),
+                    'tags': stringify_tags(ticket.tags)
+            },200
 
     def put(self,ticket_id=None):
 
@@ -147,12 +135,9 @@ class TicketAPI(Resource):
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 if not existing_tag:
-                    try:
                         new_tag = Tag(name=tag)
                         db.session.add(new_tag)
                         db.session.commit()
-                    except:
-                        return {'message':'Internal server error'},500
             
             ticket.tags=[]
             for tag in tags:
@@ -182,32 +167,27 @@ class TicketAPI(Resource):
         print(ticket_id)
         if not ticket_id:
             return {'Malformed request!'},400
-        try:
-            ticket = Ticket.query.filter_by(id=ticket_id).first()
-            if not ticket:
-                return {"message":"Ticket doesn't exist"},404
-            
-            messages = Message.query.filter_by(ticket_id=ticket_id).all()
-            if messages:
-                for message in messages:
-                    db.session.delete(message)
-                db.session.commit()
-                
-            db.session.delete(ticket)
+        
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        if not ticket:
+            return {"message":"Ticket doesn't exist"},404
+        
+        messages = Message.query.filter_by(ticket_id=ticket_id).all()
+        if messages:
+            for message in messages:
+                db.session.delete(message)
             db.session.commit()
-            return {'message':'Ticket and associated messages deleted successfully'},200
-        except:
-            return {'message':'Internal server error'},500
+            
+        db.session.delete(ticket)
+        db.session.commit()
+        return {'message':'Ticket and associated messages deleted successfully'},200
         
 
 class MyTicketsAPI(Resource):
     def get(self):
-        try:
-            tickets = Ticket.query.filter_by(creator=current_user.id).all()
-            return {
-                            'status':200,
-                            'message':'Request Successful',
-                            'tickets':stringify_tickets(tickets)
-                        },200
-        except:
-            return {'message':'Internal server error'},500
+        tickets = Ticket.query.filter_by(creator=current_user.id).all()
+        return {
+                'status':200,
+                'message':'Request Successful',
+                'tickets':stringify_tickets(tickets)
+        },200

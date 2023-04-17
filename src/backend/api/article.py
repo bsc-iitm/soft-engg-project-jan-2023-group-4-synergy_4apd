@@ -32,7 +32,7 @@ class ArticleAPI(Resource):
         new_article = Article(
                                 title = title,
                                 content = content,
-                                creator = 1,#current_user.id,
+                                creator = current_user.id,
         )
 
         if tags not in malformed:    
@@ -40,63 +40,52 @@ class ArticleAPI(Resource):
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 if not existing_tag:
-                    try:
-                        new_tag = Tag(name=tag)
-                        db.session.add(new_tag)
-                        db.session.commit()
-                    except:
-                        return {'message':'Internal server error'},500
+                    new_tag = Tag(name=tag)
+                    db.session.add(new_tag)
+                    db.session.commit()
                     
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 new_article.tags.append(existing_tag)
 
-        try:
-            db.session.add(new_article)
-            db.session.commit()
-            return {
-                    "status" : 201,
-                    "article_id" : new_article.id,
-                    "message": "Article created successfully",
-                    "title" : new_article.title,
-                    "content" : new_article.content,
-                    "created_at" : str(new_article.created_at),
-                    "creator" : new_article.creator,
-                    'tags': stringify_tags(new_article.tags),
-                    "updated_at" : str(new_article.updated_at)
-            },201
-        except:
-            return {'message':'Internal server error'},500
+        db.session.add(new_article)
+        db.session.commit()
+        return {
+                "status" : 201,
+                "article_id" : new_article.id,
+                "message": "Article created successfully",
+                "title" : new_article.title,
+                "content" : new_article.content,
+                "created_at" : str(new_article.created_at),
+                "creator" : new_article.creator,
+                'tags': stringify_tags(new_article.tags),
+                "updated_at" : str(new_article.updated_at)
+        },201
             
     def get(self,article_id=None):
         if not article_id:
-            try:
-                articles = Article.query.all()
-                return {
-                        "status" : 200,
-                        "message" : "Request successful",
-                        "articles" : stringify_articles(articles)
-                },200
-            except:
-                return {'message':'Internal server error'},500
+            articles = Article.query.all()
+            return {
+                    "status" : 200,
+                    "message" : "Request successful",
+                    "articles" : stringify_articles(articles)
+            },200
         else:
-            try:
-                article = Article.query.filter_by(id=article_id).first()
-                if not article:
-                    return {"message":"Article doesn't exist"},404
-                comments = Comment.query.filter_by(article_id=article.id).all()
-                return {
-                        "article_id" : article.id,
-                        "title" : article.title,
-                        "content" : article.content,
-                        "creator" : article.creator,
-                        "created_at" : str(article.created_at),
-                        "updated_at" : str(article.updated_at),
-                        "comments": stringify_comments(comments),
-                        "tags": stringify_tags(article.tags)
-                },200
-            except:
-                return {'message':'Internal server error'},500
+            article = Article.query.filter_by(id=article_id).first()
+            if not article:
+                return {"message":"Article doesn't exist"},404
+            
+            comments = Comment.query.filter_by(article_id=article.id).all()
+            return {
+                    "article_id" : article.id,
+                    "title" : article.title,
+                    "content" : article.content,
+                    "creator" : article.creator,
+                    "created_at" : str(article.created_at),
+                    "updated_at" : str(article.updated_at),
+                    "comments": stringify_comments(comments),
+                    "tags": stringify_tags(article.tags)
+            },200
             
     def put(self,article_id=None):
 
@@ -153,12 +142,10 @@ class ArticleAPI(Resource):
         if not article_id:
             return {'message':'Malformed request!'},400
         
-        try:
-            article = Article.query.filter_by(id=article_id).first()
-            if not article:
-                return {"message":"Article doesn't exist"},404
-            db.session.delete(article)
-            db.session.commit()
-            return {'message':'Article deleted successfully'},200
-        except:
-            return {'message':'Internal server error'},500
+        article = Article.query.filter_by(id=article_id).first()
+        if not article:
+            return {"message":"Article doesn't exist"},404
+        
+        db.session.delete(article)
+        db.session.commit()
+        return {'message':'Article deleted successfully'},200

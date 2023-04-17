@@ -7,6 +7,7 @@ from flask_login import current_user
 from models.user import User
 import uuid
 
+'''
 user_datastore = SQLAlchemyUserDatastore(db,User,Role)
 security = Security(app,user_datastore)
   
@@ -109,4 +110,4 @@ def admin():
 
     #ERROR
     else:
-        return jsonify('No access rights, forbidden!',403)
+        return jsonify('No access rights, forbidden!',403)'''
