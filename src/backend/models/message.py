@@ -10,7 +10,7 @@ class Message(db.Model):
     id = db.Column(db.String, primary_key=True, default=create_uuid)
 
     text = db.Column(db.String, nullable=False)
-    posted_at = db.Column(db.DateTime, default=func.now)
+    posted_at = db.Column(db.DateTime, default=func.now())
 
     sender_id = db.Column(db.String, db.ForeignKey('user.id'))
     ticket_id = db.Column(db.String, db.ForeignKey('ticket.id'))

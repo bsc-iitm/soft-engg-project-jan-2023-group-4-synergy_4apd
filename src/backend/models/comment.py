@@ -10,7 +10,7 @@ class Comment(db.Model):
     id = db.Column(db.String, primary_key=True, default=create_uuid)
 
     content = db.Column(db.String, nullable=False)
-    posted_at = db.Column(db.DateTime, default=func.now)
+    posted_at = db.Column(db.DateTime, default=func.now())
 
     article_id = db.Column(db.String, db.ForeignKey('article.id'))
 

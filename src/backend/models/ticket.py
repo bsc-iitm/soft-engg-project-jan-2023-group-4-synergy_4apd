@@ -20,6 +20,6 @@ class Ticket(db.Model):
 
     solution = db.Column(db.String, db.ForeignKey('message.id'))
 
-    last_response_time = db.Column(db.DateTime, default=func.now)
+    last_response_time = db.Column(db.DateTime, default=func.now())
 
     tags = db.relationship('Tag', secondary='tickets_tags', backref=db.backref('ticket', lazy='dynamic'))

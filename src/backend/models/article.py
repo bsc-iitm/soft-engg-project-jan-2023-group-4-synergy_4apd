@@ -14,7 +14,7 @@ class Article(db.Model):
     title = db.Column(db.String, nullable=False)
     content = db.Column(db.String, nullable=False)
 
-    created_at = db.Column(db.DateTime, default=func.now)
-    updated_at = db.Column(db.DateTime, default=func.now)
+    created_at = db.Column(db.DateTime, default=func.now())
+    updated_at = db.Column(db.DateTime, default=func.now())
 
     tags = db.relationship('Tag', secondary='articles_tags', backref=db.backref('article', lazy='dynamic'))
