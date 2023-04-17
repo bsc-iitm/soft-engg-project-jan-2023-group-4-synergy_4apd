@@ -19,7 +19,6 @@ class MessageAPI(Resource):
         args=create_message_parser.parse_args()
         
         text = args.get('text',None)
-        sender_id = current_user.id
         ticket_id = args.get('ticket_id',None)
 
         malformed=[None,'']
@@ -78,7 +77,7 @@ class MessageAPI(Resource):
         if len(messages) > 10:
             if start < len(messages): 
                 if count < len(messages):
-                    messages = messages[start:start+count+1]
+                    messages = messages[start:start+count]
                 else:
                     messages = messages[start:]
 

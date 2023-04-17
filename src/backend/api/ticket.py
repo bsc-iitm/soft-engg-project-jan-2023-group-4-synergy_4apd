@@ -61,9 +61,7 @@ class TicketAPI(Resource):
         new_firstMessage = Message(
                                 text = firstMessage,
                                 sender_id = current_user.id,
-                                ticket_id = new_ticket.id,
-                                hidden = public,
-                                flagged = False
+                                ticket_id = new_ticket.id
         )
         db.session.add(new_firstMessage)
         db.session.commit()
