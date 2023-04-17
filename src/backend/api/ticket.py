@@ -14,7 +14,7 @@ put_ticket_parser=reqparse.RequestParser()
 put_ticket_parser.add_argument('title',required=True,nullable=False)
 put_ticket_parser.add_argument('public',type=bool,required=True,nullable=False)
 
-class TicketsAPI(Resource):
+class TicketAPI(Resource):
     
     def post(self):
         args=create_ticket_parser.parse_args()

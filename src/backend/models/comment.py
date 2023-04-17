@@ -1,13 +1,14 @@
-# Author: Adhil
-
 from backend.database import db
-from backend.utils import createUUID
+from backend.utils import create_uuid
 
 
 class Comment(db.Model):
-    __tablename__ = "comment"
+    __tablename__ = 'comment'
 
-    id = db.Column("id", db.String, primary_key = True, default=createUUID)
-    article_id = db.Column("article_id", db.Integer, db.ForeignKey("article.id"))
-    hidden = db.Column("hidden", db.Boolean)
-    content = db.Column("content", db.String, nullable = False)
+    id = db.Column(db.String, primary_key=True, default=create_uuid)
+
+    content = db.Column(db.String, nullable=False)
+
+    article_id = db.Column(db.String, db.ForeignKey('article.id'))
+
+    hidden = db.Column(db.Boolean, default=False)

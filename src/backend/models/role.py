@@ -1,10 +1,13 @@
-# Author: Adhil
+from backend.database import db
+from backend.utils import create_uuid
 
 from flask_security import RoleMixin
-from backend.utils import createUUID
-from backend.database import db
+
 
 class Role(db.Model, RoleMixin):
-	id = db.Column("id", db.String, primary_key = True, default=createUUID)
-	name = db.Column("name", db.String, unique = True, nullable = False)
-	description = db.Column("description", db.String)
+	__tablename__ = 'role'
+	
+	id = db.Column(db.String, primary_key=True, default=create_uuid)
+
+	name = db.Column(db.String, unique=True, nullable=False)
+	description = db.Column(db.String)

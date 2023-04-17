@@ -14,7 +14,7 @@ put_article_parser.add_argument('title',required=True,nullable=False)
 put_article_parser.add_argument('content',required=True,nullable=False)
 
 
-class ArticlesAPI(Resource):
+class ArticleAPI(Resource):
     
     def post(self):
         args=create_article_parser.parse_args()

@@ -1,18 +1,20 @@
-# Author: Afnan, Adhil
-
 from backend.database import db
-from .articles_tags import *
-from backend.utils import createUUID,setTime
+from backend.utils import create_uuid
+
+from sqlalchemy.sql import func
+
 
 class Article(db.Model):
-    __tablename__ = "article"
+    __tablename__ = 'article'
     
-    id = db.Column("id", db.String, primary_key = True, default=createUUID)
-    title = db.Column("title", db.String, nullable = False)
-    created_at = db.Column("created_at", db.DateTime, default = setTime)
-    updated_at = db.Column("updated_at", db.DateTime, default = setTime)
-    content = db.Column("content", db.String, nullable = False)
-    creator = db.Column("creator", db.String, db.ForeignKey("user.id"), nullable = False)
+    id = db.Column(db.String, primary_key=True, default=create_uuid)
 
-    tags = db.relationship("Tag",secondary=articles_tags,backref=db.backref("article",lazy="dynamic"))
-    
+    creator = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+
+    title = db.Column(db.String, nullable=False)
+    content = db.Column(db.String, nullable=False)
+
+    created_at = db.Column(db.DateTime, default=func.now)
+    updated_at = db.Column(db.DateTime, default=func.now)
+
+    tags = db.relationship('Tag', secondary='articles_tags', backref=db.backref('article', lazy='dynamic'))

@@ -2,7 +2,7 @@ from uuid import uuid4
 from backend.models import *
 from datetime import datetime
 
-def createUUID():
+def create_uuid():
     return str(uuid4())
 
 def setTime():
