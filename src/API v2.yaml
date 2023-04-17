@@ -640,7 +640,7 @@ paths:
                 Internal Server Error:
                   value: |
                     {"status":500,"message":"Internal server error"}
-  /api/v1/admin/articles:
+  /api/v1/articles:
     summary: Article API ENDPOINT - Admins ONLY
     post:
       summary: Article Creation
@@ -836,7 +836,7 @@ paths:
     
     
     
-  /api/v1/admin/articles/<UUID_article>:
+  /api/v1/articles/<UUID_article>:
     summary: SPECIFIC ARTICLE API ENDPOINT - ADMINS ONLY!
     get:
       summary: Getting a specific article
@@ -1035,7 +1035,7 @@ paths:
                       "message":"Internal server error"
                     }
 
-  /api/v1/admin/comments:
+  /api/v1/comments:
     summary: COMMENT API ENDPOINT - Admins ONLY
     
     post:
@@ -1210,7 +1210,7 @@ paths:
                       "message":"Internal server error"
                       
                     }
-  /api/v1/admin/comments/<commentUUID>:
+  /api/v1/comments/<commentUUID>:
     summary: COMMENT API ENDPOINT - Admins ONLY    
     
     delete:
