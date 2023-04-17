@@ -8,3 +8,4 @@ from .tag import *
 from .ticket import *
 from .tickets_tags import *
 from .user import *
+from .notification import *
