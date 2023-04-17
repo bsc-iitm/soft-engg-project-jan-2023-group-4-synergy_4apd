@@ -1,8 +1,7 @@
 from flask_login import current_user
 from flask_restful import reqparse,Resource
-from flask import jsonify
 from backend.models import *
-
+from datetime import datetime
 
 create_comment_parser=reqparse.RequestParser()
 create_comment_parser.add_argument('articleUUID',required=True)
