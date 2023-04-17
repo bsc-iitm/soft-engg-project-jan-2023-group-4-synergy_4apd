@@ -332,17 +332,35 @@ paths:
           application/json:
             schema:
               example:
-                title: Sample Title
-                visibility: public
+                title: Test YAML Modification Title
+                public: false
+                tags: "oppe1,quiz2,endterm"
+
       responses:
         '200':
           description: Ticket modified successfully
           content:
             application/json:
               examples:
-                Valid Ticket Deletion:
+                Valid Ticket Modification:
                   value: |
-                    {"status":200,"message":"Ticket modified successfully"}
+                    {
+                      "message": "Ticket modified successfully",
+                      "ticket": [
+                          {
+                              "ticket_id": "2d5fb389-1144-4902-99de-80042c2790e8",
+                              "Votes": null,
+                              "title": "Test YAML Modification Title",
+                              "status": null,
+                              "last_response_time": "2023-04-17 18:20:43",
+                              "tags": [
+                                  "oppe1",
+                                  "quiz2",
+                                  "endterm"
+                              ]
+                          }
+                      ]
+                    }
         '400':
           description: Malformed request
           content:
@@ -359,6 +377,15 @@ paths:
                 Forbidden Operation:
                   value: |
                     {"status":403,"message":"No access rights, forbidden!"}
+        404:
+          description: Associated ticket not found
+          content:
+            application/json:
+              examples:
+                Wrong Ticket UUID supplied:
+                  value: |
+                    {"status":404,"message":"Ticket doesn't exist!"}
+        
         '500':
           description: Internal server error
           content:
@@ -445,7 +472,7 @@ paths:
             type: integer
           required: true
         - in: query
-          name: ticketUUID
+          name: ticket_id
           schema:
             type: string
           required: true
@@ -455,38 +482,57 @@ paths:
           content:
             application/json:
               examples:
-                Valid Ticket GET Request:
+                Valid Message GET Request:
                   value: >
-                   { "status": 200, "message": "Request successful",
-                      "ticketID":"<UUID_ticket>",
-                      "LastResponseTime": "<time_in_format>",
-                      "messages":[
-                        {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
+                   {
+                      "status": 200,
+                      "message": "Request successful",
+                      "ticket_id": "54311e48-9229-4ba2-987d-3ee2802ccfda",
+                      "last_response_time": "2023-04-17 21:20:20.604604",
+                      "messages": [
+                      {
+                          "message_id": "89241c72-b101-44e8-980a-5cba485c529e",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:06"
                       },
                       {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
+                          "message_id": "7300739e-39ac-4e70-9554-ee7f8164f994",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:06"
                       },
                       {
-                        "messageID":"<UUID_message>",
-                        "text": "Message Text",
-                        "senderID":"<UUID-sender",
-                        "senderName":"sender_name",
-                        "senderPicture":"<profile_picture>",
-                        "timestamp": "<time_in_format>"
-                      }
+                          "message_id": "cc4cfafb-3587-4d0e-814d-e8f8573fdd34",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:07"
+                      },
+                      {
+                          "message_id": "19196cb6-c042-45ca-828a-56f47b40a0cf",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:07"
+                      },
+                      {
+                          "message_id": "801e761b-6e14-4a1f-a308-4ade97b4a77a",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:08"
+                      },
+                      {
+                          "message_id": "813170c5-9d0c-4101-83ee-1be2c145fb92",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:08"
+                      },
+                      {
+                          "message_id": "80830654-a2e4-4f26-bf36-831d8740404f",
+                          "text": "Message 3",
+                          "sender_id": "0e103f32-56db-4ede-8dac-b356549111f3",
+                          "timestamp": "2023-04-17 15:50:09"
+                        }
                       ]
-
                     }
         '400':
           description: Malformed request
@@ -504,6 +550,16 @@ paths:
                 Forbidden Operation:
                   value: |
                     {"status":403,"message":"No access rights, forbidden!"}
+        404:
+          description: Associated ticket not found
+          content:
+            application/json:
+              examples:
+                Wrong Ticket UUID supplied:
+                  value: |
+                    {"status":404,"message":"Associated ticket doesn't exist!"}
+        
+        
         '500':
           description: Internal server error
           content:
@@ -891,7 +947,7 @@ paths:
                       "message":"No access rights, forbidden!"
                     }
         404:
-          description: Associated ticket not found
+          description: Associated article not found
           content:
             application/json:
               examples:
@@ -931,11 +987,20 @@ paths:
                 Valid Article Updation:
                   value: 
                     {
-                      "status":200,
-                      "message":"Article updated successfully",
-                      "title": "Article Title 1",
-                      "content": "Article Content 1",
-                      "updated_at":"Article Updation Timestamp 1"
+                      "message": "Article modified successfully",
+                      "article": [
+                          {
+                              "article_id": "ce4c3ffb-8e1f-4747-8e0c-7d599c386eb1",
+                              "title": "Article Modification for YAML HaHa",
+                              "content": "What the hell kinda name is Soap? How'd a muppet like you pass selection, eh?",
+                              "creator": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                              "created_at": "2023-04-17 19:07:16",
+                              "updated_at": "2023-04-18 00:37:42.867674",
+                              "tags": [
+                                  "NoTag :)"
+                              ]
+                          }
+                      ]
                     }
         400:
           description: Malformed request
@@ -1023,6 +1088,14 @@ paths:
                       "status":403,
                       "message":"No access rights, forbidden!"
                     }
+        404:
+          description: Associated article not found
+          content:
+            application/json:
+              examples:
+                Wrong Article UUID supplied:
+                  value: |
+                    {"status":404,"message":"Article doesn't exist!"}
         500:
           description: Internal server error
           content:
@@ -1070,8 +1143,9 @@ paths:
                       "status": 201,
                       "message": "Request successful",
                       "articleID": "44013aaf-46e4-4e78-8c4c-6be0d0a828cf",
-                      "commentID": "aa29fa82-3b7e-494a-aef9-64a424ced6c6",
-                      "content": "Comment POST API TEST"
+                      "commentID": "91024bdd-7fe7-4a8c-af22-bdd57af545ae",
+                      "content": "Comment POST API TEST",
+                      "posted_at": "2023-04-17 19:15:36"
                     }
         400:
           description: Malformed request
@@ -1146,26 +1220,30 @@ paths:
                     {
                       "status": 200,
                       "message": "Request successful",
-                      "articleID": "44013aaf-46e4-4e78-8c4c-6be0d0a828cf",
+                      "articleID": "5b19e043-b856-4df2-99aa-eb8dbc38ac88",
                       "comments": [
                           {
-                              "id": "aa29fa82-3b7e-494a-aef9-64a424ced6c6",
-                              "content": "Comment POST API TEST"
+                              "id": "8a315e2a-5350-46b7-b202-05fee0e319b6",
+                              "content": "test123",
+                              "posted_at": "2023-04-17 19:10:34"
                           },
                           {
-                              "id": "7e42fcc6-2fde-4669-8718-0d25f74eefc4",
-                              "content": "Comment POST API TEST1"
+                              "id": "6556592e-a42b-4669-b8b7-3bdaeeb90d23",
+                              "content": "tedst123",
+                              "posted_at": "2023-04-17 19:14:53"
                           },
                           {
-                              "id": "b502169d-b2ad-414b-9c2d-c26520633d83",
-                              "content": "Comment POST API TEST2"
+                              "id": "91024bdd-7fe7-4a8c-af22-bdd57af545ae",
+                              "content": "tedst123d",
+                              "posted_at": "2023-04-17 19:15:36"
                           },
                           {
-                              "id": "b329ea94-bf55-4b33-9b4e-fd39ce30bc0c",
-                              "content": "Comment POST API TEST3"
+                              "id": "65e72de5-47aa-4dce-ac32-94752f15bb86",
+                              "content": "tedstsa123d",
+                              "posted_at": "2023-04-17 19:16:40"
                           }
                       ]
-                  }
+                    }
         400:
           description: Malformed request
           content:
@@ -1269,6 +1347,243 @@ paths:
                 Wrong Article UUID supplied:
                   value: |
                     {"status":404,"message":"Comment doesn't exist!"}
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+
+  /api/v1/tags:
+    summary: TAGS API ENDPOINT - Admins ONLY
+    
+    post:
+      summary: Tag Creation
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example:   # Sample object
+                name: "New Test Tag"
+                description: "This is test tag for YAML"
+            
+      responses:
+        201:
+          description: Valid tag created
+          content:
+            application/json:
+              examples:
+                Valid Tag Creation:
+                  value: 
+                    {
+                      "status": 201,
+                      "message": "Request successful",
+                      "tagID": "41a29f64-3865-435d-b689-90ccd5bc4c09",
+                      "tagName": "New Test Tag",
+                      "tagDescription": "This is test tag for YAML"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"                      
+                    }                
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"                      
+                    }
+    get:
+      summary: Getting all tags or a particular tag
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: tagIDList
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: false
+      
+            
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Comment GET Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Request successful",
+                      "tags": [
+                          {
+                              "tagID": "89e9c5c3-132c-4c70-97e1-c61624ca8cb5",
+                              "name": "oppe",
+                              "description": null
+                          },
+                          {
+                              "tagID": "a60326b6-4e95-432b-8f9c-55bffd109064",
+                              "name": "quiz1",
+                              "description": null
+                          }
+                      ]
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        404:
+          description: Associated tag(s) not found
+          content:
+            application/json:
+              examples:
+                Wrong tag name/UUID supplied:
+                  value: |
+                    {
+                      "status": 404,
+                      "message": "No matching tags found!"
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+  /api/v1/tags/<tagUUID>:
+    summary: TAG API ENDPOINT - Admins ONLY    
+    
+    delete:
+      summary: Delete a particular tag
+      description: ''
+      operationId: ''
+      parameters: 
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true        
+      
+            
+      responses:
+        200:
+          description: Deletion successful
+          content:
+            application/json:
+              examples:
+                Valid Tag DELETE Request:
+                  value: 
+                    {
+                      "status": 200,
+                      "message": "Deletion successful!"
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: >
+                    {
+                      "status":400,
+                      "message":"Malformed request!"
+                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        404:
+          description: Tag not found
+          content:
+            application/json:
+              examples:
+                Wrong Tag UUID supplied:
+                  value: |
+                    {"status":404,"message":"Tag doesn't exist!"}
         
         500:
           description: Internal server error

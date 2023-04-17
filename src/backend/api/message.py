@@ -55,15 +55,12 @@ class MessageAPI(Resource):
                 'flagged':new_message.flagged
         },201
 
-    def get(self,message_id=None):
-        if not message_id:
-            return {'message':'Message not found!'},404
-        
+    def get(self):
+                
         args=get_message_parser.parse_args()
         start = args.get('start',0)
         count = args.get('count',0)
         ticket_id = args.get('ticket_id')
-        print(start,count,ticket_id)
         
         ticket = Ticket.query.filter_by(id=ticket_id).first()
         if not ticket:

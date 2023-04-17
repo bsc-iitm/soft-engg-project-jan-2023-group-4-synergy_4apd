@@ -39,6 +39,7 @@ class CommentAPI(Resource):
                     commentreturn={}
                     commentreturn['id']=i.id
                     commentreturn['content']=i.content
+                    commentreturn['posted_at']=str(i.posted_at)
                     comments.append(commentreturn)
 
                 return {"status":200,"message":"Request successful","articleID":articleUUID,"comments":comments},200
@@ -65,7 +66,8 @@ class CommentAPI(Resource):
             return {"status":201,"message":"Request successful",
                     "articleID":article_id,
                     "commentID":newComment.id,
-                    "content":newComment.content},201
+                    "content":newComment.content,
+                    "posted_at":str(newComment.posted_at)},201
         else:
             if ArticleExistsCheck is None:
                 return {"status":404,"message":"Article doesn't exist!"},404

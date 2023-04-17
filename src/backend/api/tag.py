@@ -15,10 +15,6 @@ get_tag_parser.add_argument('tagIDList',location='args')
 get_tag_parser.add_argument('name',location='args')
 
 
-delete_tag_parser=reqparse.RequestParser()
-delete_tag_parser.add_argument('tagID')
-
-
 class TagAPI(Resource):
     def get(self):
         
@@ -91,24 +87,20 @@ class TagAPI(Resource):
             db.session.add(dbObj)
             db.session.commit()
 
-            return {"status":201,"message":"Request successful"},201
+            return {"status":201,"message":"Request successful","tagID":dbObj.id,"tagName":dbObj.name,"tagDescription":dbObj.description},201
         else:
             return {"status":200,"message":"Tag already exists!"},200
     
 
-    def delete(self):
-        d=delete_tag_parser.parse_args()
-        tagID=d.get('tagID',None)
+    def delete(self,tag_id=None):
 
-
-        if tagID=='' or tagID is None:
+        if tag_id=='' or tag_id is None:
             return {"status":400,"message":"Malformed request!"},400
 
-        tagID=int(tagID)
-        x=Tag.query.filter_by(id=tagID).first()
+        x=Tag.query.filter_by(id=tag_id).first()
 
         if x==None:
-            return {"status":200,"message":"Tag doesn't exist!"},200
+            return {"status":404,"message":"Tag doesn't exist!"},404
         else:
             db.session.delete(x)
             db.session.commit()
