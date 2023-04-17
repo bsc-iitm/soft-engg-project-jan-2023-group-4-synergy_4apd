@@ -9,10 +9,10 @@ class Notification(db.Model):
     id = db.Column(db.String, primary_key=True, default=create_uuid)
 
     sender_id = db.Column(db.String, db.ForeignKey('user.id'))
-    recipient_id = db.Column(db.String, db.ForeignKey('user.id'))
+    recipient_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
 
-    content = db.Column(db.String, nullable=True)
-    action_url = db.Column(db.String, nullable=True)
+    content = db.Column(db.String)
+    action_url = db.Column(db.String)
     
     timestamp = db.Column(db.DateTime, default=func.now())
     

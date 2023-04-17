@@ -70,3 +70,18 @@ def stringify_articles(articles):
         article_list.append(article_format)
 
     return article_list
+
+def stringify_notifications(notifications):
+    notification_list = []
+    for notification in notifications:
+        notification_format = {
+                            "id" : notification.id,
+                            "sender_id" : notification.sender_id,
+                            "content" : notification.content,
+                            "action_url" : notification.action_url,
+                            "timestamp" : str(notification.timestamp),
+                            "read" : notification.read
+        }
+        notification_list.append(notification_format)
+
+    return notification_list

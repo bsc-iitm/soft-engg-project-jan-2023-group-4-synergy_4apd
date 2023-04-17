@@ -28,9 +28,10 @@ api.add_resource(TicketAPI, '/api/v1/tickets/', '/api/v1/tickets/<string:ticket_
 api.add_resource(MessageAPI, '/api/v1/messages/', '/api/v1/messages/<string:message_id>/')
 api.add_resource(ArticleAPI, '/api/v1/articles/', '/api/v1/articles/<string:article_id>/')
 api.add_resource(CommentAPI, '/api/v1/comments/', '/api/v1/comments/<string:comment_id>/')
-
+api.add_resource(NotificationAPI, '/api/v1/notifications/', '/api/v1/notifications/<string:notification_id>/')
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/')
+
 
 if __name__ == '__main__':
     db.create_all()
