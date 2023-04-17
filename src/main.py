@@ -26,12 +26,11 @@ security = Security(app, user_datastore, register_form=CustomRegisterForm)
 
 api.add_resource(TicketAPI, '/api/v1/tickets/', '/api/v1/tickets/<string:ticket_id>/')
 api.add_resource(MessageAPI, '/api/v1/messages/', '/api/v1/messages/<string:message_id>/')
+api.add_resource(ArticleAPI, '/api/v1/articles/', '/api/v1/articles/<string:article_id>/')
+api.add_resource(CommentAPI, '/api/v1/comments/', '/api/v1/comments/<string:comment_id>/')
 
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/')
-
-api.add_resource(ArticleAPI, '/api/v1/admin/articles/', '/api/v1/admin/articles/<string:article_id>/')
-api.add_resource(CommentAPI, '/api/v1/admin/comments/', '/api/v1/admin/comments/<string:comment_id>/')
 
 if __name__ == '__main__':
     db.create_all()
