@@ -1,113 +1,55 @@
-from flask import request
-
-from flask import request, jsonify
-from flask_security import Security, SQLAlchemyUserDatastore,login_required
+from flask_restful import Resource, reqparse
+from sqlalchemy.dialects.sqlite import BLOB
 from flask_security.utils import hash_password
 from flask_login import current_user
-from models.user import User
-import uuid
+from backend.models import *
 
-'''
-user_datastore = SQLAlchemyUserDatastore(db,User,Role)
-security = Security(app,user_datastore)
-  
-@app.route('/api/v1/user', methods=['GET','POST','PUT','DELETE'])
-@login_required
-def user():
-    #POST
-    if request.method == 'POST':
-        if request.headers.get('Content-Type') == 'application/json':
-           user_data = request.get_json()
-        else:
-            return jsonify('Malformed request!',400)
-        user_datastore.create_user(
-                                    id = uuid.uuid4(),
-                                    name = user_data['name'],
-                                    email = user_data['email'],
-                                    password = hash_password(user_data['password']),
-                                    pic = user_data['pic'],
-                                    bio = user_data['bio'],
-                                    phone = user_data['phone'],
-                                    designation = user_data['designation']
-        )
-        try:
-            db.session.commit()
-            return jsonify('User created successfully',201)
-        except:
-            return jsonify('Internal server error',500)
-    
-    #GET
-    elif request.method == 'GET':
-        return jsonify({
-                        'name' : current_user.name,
-                        'email' : current_user.email,
-                        'pic' : current_user.pic,
-                        'bio' : current_user.bio,
-                        'phone' : current_user.phone,
-                        'designation' : current_user.designation,
-        },200)
-    
-    #PUT
-    elif request.method == 'PUT':
-        new_user_data = []
-        if request.headers.get('Content-Type') == 'application/json':
-           new_user_data = request.get_json()
-        else:
-            return jsonify('Malformed request!',400)
-        
-        current_user.name = new_user_data['name']
-        current_user.email = new_user_data['email']
-        current_user.password = hash_password(new_user_data['password'])
-        current_user.pic = new_user_data['pic']
-        current_user.bio = new_user_data['bio']
-        current_user.phone = new_user_data['phone']
-        current_user.designation = new_user_data['designation']
-        
-        try:
-            db.session.commit()
-            return jsonify('User updated successfully',200)
-        except:
-            return jsonify('Internal server error',500)
-        
-    #DELETE
-    elif  request.method == 'DELETE':
-        try:
-            current_user.delete()
-            db.session.commit()
-            return jsonify('User deleted successfully',200)
-        except:
-            return jsonify('Internal server error',500)
-    
-    #ERROR
-    else:
-        return jsonify('No access rights, forbidden!',403)
-    
-@app.route('/api/v1/admin/user', methods=['POST','DELETE'])
-@login_required
-def admin():
-    #POST
-    if request.method == 'POST':
-        if request.headers.get('Content-Type') == 'application/json':
-           user_data = request.get_json()
-        else:
-            return jsonify('Malformed request!',400)
-        if user_data['action'] == 'promote':
-            try:
-                pass
-            except:
-                return jsonify('Malformed request',400)
-        elif user_data['action'] == 'demote':
-            try:
-                pass
-            except:
-                return jsonify('Malformed request',400)
-        else:
-            return jsonify('No access rights; Forbidden',403)
-        
-    #DELETE
-    elif request.method == 'DELETE':
-        pass
+edit_user_parser=reqparse.RequestParser()
+edit_user_parser.add_argument('email')
+edit_user_parser.add_argument('password')
+edit_user_parser.add_argument('name')
+edit_user_parser.add_argument('designation')
+edit_user_parser.add_argument('bio')
+edit_user_parser.add_argument('phone',type=int)
+edit_user_parser.add_argument('profile_pic',type=BLOB)
 
-    #ERROR
-    else:
-        return jsonify('No access rights, forbidden!',403)'''
+class UserAPI(Resource):
+
+    def put(self):
+        user = User.query.filter_by(id=current_user.id).first()
+        print(user)
+        args=edit_user_parser.parse_args()
+        email=args.get('email',user.email)
+        password=args.get('password',None)
+        name=args.get('name',user.name)
+        designation=args.get('designation',user.designation)
+        bio=args.get('bio',user.bio)
+        phone=args.get('phone',user.phone)
+        profile_pic=args.get('profile_pic',user.profile_pic)
+
+        if User.query.filter_by(email=email).first():
+            return {
+                    "message":"Email ID already in use"
+            },400
+        
+        user.email = email
+        if password:
+            user.password = hash_password(password)
+        user.name = name
+        user.designation = designation
+        user.bio = bio
+        user.phone = phone
+        user.profile_pic = profile_pic
+
+        
+        db.session.commit()
+        
+        return{
+                "message":"User updated successfully",
+                "email":user.email,
+                "name":user.name,
+                "designation":user.designation,
+                "bio":user.bio,
+                "phone":user.phone,
+                "profile_pic":user.profile_pic
+        },200

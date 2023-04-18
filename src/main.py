@@ -32,8 +32,7 @@ api.add_resource(NotificationAPI, '/api/v1/notifications/', '/api/v1/notificatio
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/','/api/v1/tags/<string:tag_id>')
 api.add_resource(AnalyticsAPI, '/api/v1/analytics/')
-
-
+api.add_resource(UserAPI, '/api/v1/users/')
 
 if __name__ == '__main__':
     db.create_all()
