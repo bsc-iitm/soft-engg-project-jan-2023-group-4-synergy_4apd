@@ -17,7 +17,6 @@ class UserAPI(Resource):
 
     def put(self):
         user = User.query.filter_by(id=current_user.id).first()
-        print(user)
         args=edit_user_parser.parse_args()
         email=args.get('email',user.email)
         password=args.get('password',None)
@@ -46,6 +45,18 @@ class UserAPI(Resource):
         
         return{
                 "message":"User updated successfully",
+                "email":user.email,
+                "name":user.name,
+                "designation":user.designation,
+                "bio":user.bio,
+                "phone":user.phone,
+                "profile_pic":user.profile_pic
+        },200
+    
+    def get(self):
+        user = User.query.filter_by(id=current_user.id).first()
+        return{
+                "message":"Request successful",
                 "email":user.email,
                 "name":user.name,
                 "designation":user.designation,
