@@ -6,3 +6,4 @@ from .ticket import *
 from .notification import *
 from .analytics import *
 from .user import *
+from .role import *
