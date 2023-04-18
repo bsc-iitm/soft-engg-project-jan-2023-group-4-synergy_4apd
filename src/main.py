@@ -31,6 +31,8 @@ api.add_resource(CommentAPI, '/api/v1/comments/', '/api/v1/comments/<string:comm
 api.add_resource(NotificationAPI, '/api/v1/notifications/', '/api/v1/notifications/<string:notification_id>/')
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/','/api/v1/tags/<string:tag_id>')
+api.add_resource(AnalyticsAPI, '/api/v1/analytics/')
+
 
 
 if __name__ == '__main__':
