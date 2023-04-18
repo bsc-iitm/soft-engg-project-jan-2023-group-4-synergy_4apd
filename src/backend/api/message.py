@@ -17,21 +17,26 @@ get_message_parser.add_argument('ticket_id',location='args',required=True,nullab
 class MessageAPI(Resource):
     def post(self):
         args=create_message_parser.parse_args()
-        
         text = args.get('text',None)
         ticket_id = args.get('ticket_id',None)
 
         malformed=[None,'']
         if text in malformed or ticket_id in malformed:
-            return {"message":"Malformed request","status":400},400
+            return {
+                    "message":"Malformed request"
+            },400
 
-        TicketExistsCheck=Ticket.query.filter_by(id=ticket_id).first()
-        if TicketExistsCheck is None:
-                return {"status":404,"message":"Associated ticket not found!"},404
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        if not ticket:
+            return {
+                    "message":"Associated ticket not found!"
+            },404
 
-        #Implement MessageExistsCheck upon implementation of Flask_Security
-        #MessageExistsCheck=Message.query.filter_by(content=content,article_id=article_id).first()
-
+        existing_message = Message.query.filter_by(text=text,ticket_id=ticket.id,sender_id=current_user.id).first()
+        if existing_message:
+            return {
+                    "message":"Message already exists!"
+            },400
 
         new_message = Message(
                                 text = text,
@@ -40,36 +45,42 @@ class MessageAPI(Resource):
                                 hidden = False,
                                 flagged = False
         )
+
         db.session.add(new_message)
-        TicketExistsCheck.last_response_time=datetime.now()
+        ticket.last_response_time=datetime.now()
         db.session.commit()
+
         return {
-                'status':201,
                 'message':'Message created successfully',
-                'messageID':new_message.id,
+                'id':new_message.id,
                 'text':new_message.text,
-                'senderID':new_message.sender_id,
-                'ticketID':new_message.ticket_id,
                 'posted_at':str(new_message.posted_at),
+                'sender_id':new_message.sender_id,
+                'ticket_id':new_message.ticket_id,
                 'hidden':new_message.hidden,
                 'flagged':new_message.flagged
         },201
 
     def get(self):
-                
         args=get_message_parser.parse_args()
         start = args.get('start',0)
         count = args.get('count',0)
         ticket_id = args.get('ticket_id')
         
         ticket = Ticket.query.filter_by(id=ticket_id).first()
+        print(ticket)
         if not ticket:
-            return {"status":404,"message":"Associated ticket not found!"},404
-        
+            return {
+                    "message":"Associated ticket not found!"
+            },404
+    
         messages = Message.query.filter_by(ticket_id=ticket.id,hidden=False).all()
+        print(messages)
 
         if start < 0 or count < 0:
-            return {'message':'Malformed request!'},400
+            return {
+                    'message':'Malformed request!'
+            },400
         
         if len(messages) > 10:
             if start < len(messages): 
@@ -79,7 +90,6 @@ class MessageAPI(Resource):
                     messages = messages[start:]
 
         return {
-                'status':200,
                 'message':'Request successful',
                 'ticket_id':ticket.id,
                 'last_response_time':str(ticket.last_response_time),
@@ -88,12 +98,18 @@ class MessageAPI(Resource):
         
     def delete(self,message_id=None):
         if not message_id:
-            return {'message':'Malformed request!'},400
+            return {
+                    'message':'Malformed request!'
+            },400
 
         message = Message.query.filter_by(id=message_id,hidden=False).first()
         if not message:
-            return {"message":"Message doesn't exist"},404
+            return {
+                    "message":"Message doesn't exist"
+            },404
         
         db.session.delete(message)
         db.session.commit()
-        return {'message':'Message deleted successfully'},200
+        return {
+                'message':'Message deleted successfully'
+        },200

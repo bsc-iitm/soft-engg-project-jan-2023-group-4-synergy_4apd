@@ -25,7 +25,6 @@ class TicketAPI(Resource):
     @auth_required("token")
     def post(self):
         args=create_ticket_parser.parse_args()
-
         title=args.get('title',None)
         firstMessage=args.get('firstMessage',None)
         public=args.get('public',True)
@@ -33,7 +32,9 @@ class TicketAPI(Resource):
 
         malformed=[None,'']
         if title in malformed or firstMessage in malformed:
-            return {"message":"Malformed request","status":400},400
+            return {
+                    "message":"Malformed request"
+            },400
         
         new_ticket = Ticket(
                             title = title,
@@ -55,66 +56,75 @@ class TicketAPI(Resource):
                     new_ticket.tags.append(existing_tag)
 
         db.session.add(new_ticket)
+        db.session.commit()
+
         new_firstMessage = Message(
                                 text = firstMessage,
                                 sender_id = current_user.id,
                                 ticket_id = new_ticket.id
         )
+
         db.session.add(new_firstMessage)
         db.session.commit()
+
         return {
-                "status": 201,
                 "message": "Ticket created successfully",
-                "ticketID": new_ticket.id,
+                "id": new_ticket.id,
                 "title": new_ticket.title,
-                "messageID": new_firstMessage.id,
-                "firstMessage": new_firstMessage.text,
+                "status": new_ticket.status,
+                "votes": new_ticket.votes,
                 "is_public": new_ticket.is_public,
-                "senderID": new_ticket.creator,
-                "senderName": current_user.name,
-                "senderPicture": current_user.profile_pic,
+                "creator": new_ticket.creator,
+                "assignee": new_ticket.assignee,
+                "first_message_id": new_firstMessage.id,
+                "first_message_text": new_firstMessage.text,
                 'tags': stringify_tags(new_ticket.tags),
-                "timestamp": str(new_ticket.last_response_time)
+                "last_response_time": str(new_ticket.last_response_time)
         },201
-        
             
     def get(self,ticket_id=None):
         if not ticket_id:
             tickets = Ticket.query.filter_by(is_public=True).all()
             return {
-                    'status':200,
                     'message':'Request Successful',
                     'tickets':stringify_tickets(tickets)
             },200
-        else:
-            ticket = Ticket.query.filter_by(id=ticket_id).first()
-            if not ticket:
-                return {"message":"Ticket doesn't exist"},404
-            
-            messages = Message.query.filter_by(ticket_id=ticket_id).all()
-            return {
-                    'ticketID': ticket.id,
-                    'votes': ticket.votes,
-                    'title': ticket.title,
-                    'status': ticket.status,
-                    'solutionID': ticket.solution,
-                    'last_response_time': str(ticket.last_response_time),
-                    'messages': stringify_messages(messages),
-                    'tags': stringify_tags(ticket.tags)
-            },200
-
-    def put(self,ticket_id=None):
-
-        malformed=[None,'']
-        if ticket_id in malformed:
-            return {'message':'Malformed request!'},400
         
         ticket = Ticket.query.filter_by(id=ticket_id).first()
         if not ticket:
-            return {"message":"Ticket doesn't exist"},404
+            return {
+                    "message":"Ticket doesn't exist"
+            },404
+        
+        messages = Message.query.filter_by(ticket_id=ticket_id).all()
+        return {
+                'id': ticket.id,
+                'title': ticket.title,
+                'status': ticket.status,
+                'votes': ticket.votes,
+                "is_public": ticket.is_public,
+                "creator": ticket.creator,
+                "assignee": ticket.assignee,
+                "solution": ticket.solution,
+                'last_response_time': str(ticket.last_response_time),
+                'messages': stringify_messages(messages),
+                'tags': stringify_tags(ticket.tags)
+        },200
+
+    def put(self,ticket_id=None):
+        malformed=[None,'']
+        if not ticket_id:
+            return {
+                    'message':'Malformed request!'
+            },400
+        
+        ticket = Ticket.query.filter_by(id=ticket_id).first()
+        if not ticket:
+            return {
+                    "message":"Ticket doesn't exist"
+            },404
     
         args=put_ticket_parser.parse_args()
-
         title=args.get('title',ticket.title)
         public=args.get('public',ticket.is_public)
         status=args.get('status',ticket.status)
@@ -123,7 +133,6 @@ class TicketAPI(Resource):
         votes=args.get('votes',ticket.votes)
         assignee=args.get('assignee',ticket.assignee)
 
-
         if tags not in malformed:
             tags = tags.split(",")
             for tag in tags:
@@ -131,15 +140,9 @@ class TicketAPI(Resource):
                 if not existing_tag:
                         new_tag = Tag(name=tag)
                         db.session.add(new_tag)
-                        db.session.commit()
-            
-            ticket.tags=[]
-            for tag in tags:
-                existing_tag = Tag.query.filter_by(name=tag).first()
-                ticket.tags.append(existing_tag)
-        
-        if tags=="":
-            ticket.tags=[]
+                        ticket.tags.append(new_tag)
+                else:
+                    ticket.tags.append(existing_tag)
         
         ticket.title = title
         ticket.is_public = public
@@ -149,39 +152,48 @@ class TicketAPI(Resource):
         ticket.assignee=assignee
 
         db.session.commit()
-        
-        ticket = Ticket.query.filter_by(id=ticket_id).all()
 
-        return {'message':'Ticket modified successfully',"ticket":stringify_tickets(ticket)},200
-        
-
-
+        return {
+                'message':'Ticket modified successfully',
+                'id': ticket.id,
+                'title': ticket.title,
+                'status': ticket.status,
+                'votes': ticket.votes,
+                "is_public": ticket.is_public,
+                "creator": ticket.creator,
+                "assignee": ticket.assignee,
+                "solution": ticket.solution,
+                'last_response_time': str(ticket.last_response_time),
+                'tags': stringify_tags(ticket.tags)
+        },200
 
     def delete(self,ticket_id=None):
-        print(ticket_id)
         if not ticket_id:
-            return {'Malformed request!'},400
+            return {
+                    "message":'Malformed request!'
+            },400
         
         ticket = Ticket.query.filter_by(id=ticket_id).first()
         if not ticket:
-            return {"message":"Ticket doesn't exist"},404
+            return {
+                    "message":"Ticket doesn't exist"
+            },404
         
         messages = Message.query.filter_by(ticket_id=ticket_id).all()
         if messages:
             for message in messages:
                 db.session.delete(message)
-            db.session.commit()
             
         db.session.delete(ticket)
         db.session.commit()
-        return {'message':'Ticket and associated messages deleted successfully'},200
-        
+        return {
+                'message':'Ticket and associated messages deleted successfully'
+        },200
 
 class MyTicketsAPI(Resource):
     def get(self):
         tickets = Ticket.query.filter_by(creator=current_user.id).all()
         return {
-                'status':200,
                 'message':'Request Successful',
                 'tickets':stringify_tickets(tickets)
         },200

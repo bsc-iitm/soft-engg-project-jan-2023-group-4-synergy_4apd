@@ -2,6 +2,7 @@ from flask_login import current_user
 from flask_restful import reqparse,Resource
 from backend.models import *
 from datetime import datetime
+from backend.utils import stringify_comments
 
 create_comment_parser=reqparse.RequestParser()
 create_comment_parser.add_argument('articleUUID',required=True)
@@ -14,35 +15,28 @@ get_comment_parser.add_argument('articleUUID',location='args',required=True)
 
 class CommentAPI(Resource):
     def get(self):
-
         args=get_comment_parser.parse_args()
-        articleUUID=args.get('articleUUID',None)
+        article_id=args.get('articleUUID',None)
 
         malformed=[None,'']
-        if articleUUID in malformed:
-            return {"message":"Malformed request","status":400},400
+        if article_id in malformed:
+            return {
+                    "message":"Malformed request"
+            },400
 
-        else:
-            
-            articleCheck=Article.query.filter_by(id=articleUUID).first()
-            if articleCheck is None:
-                return {"status":404,"message":"Article doesn't exist!"},404
+        article = Article.query.filter_by(id=article_id).first()
+        if not article:
+            return {
+                    "message":"Article doesn't exist!"
+            },404
 
-            comment=Comment.query.filter_by(article_id=articleUUID,hidden=False).all()
+        comments = Comment.query.filter_by(article_id=article_id, hidden=False).all()
 
-            if len(comment) == 0:
-                return {"message":"No comments for the article","status":200},200
-            
-            else:
-                comments=[]
-                for i in comment:
-                    commentreturn={}
-                    commentreturn['id']=i.id
-                    commentreturn['content']=i.content
-                    commentreturn['posted_at']=str(i.posted_at)
-                    comments.append(commentreturn)
-
-                return {"status":200,"message":"Request successful","articleID":articleUUID,"comments":comments},200
+        return {
+                "message":"Request successful",
+                "article_id":article_id,
+                "comments":stringify_comments(comments)
+        },200
 
 
     def post(self):
@@ -53,39 +47,57 @@ class CommentAPI(Resource):
         
         malformed=[None,'']
         if article_id in malformed or content in malformed:
-            return {"message":"Malformed request","status":400},400
+            return {
+                    "message":"Malformed request"
+            },400
         
-        ArticleExistsCheck=Article.query.filter_by(id=article_id).first()
-        CommentExistsCheck=Comment.query.filter_by(content=content,article_id=article_id).first()
+        article = Article.query.filter_by(id=article_id).first()
+        if not article:
+            return {
+                    "message":"Article doesn't exist!"
+            },404
+        
+        existing_comment = Comment.query.filter_by(content=content,article_id=article_id).first()
+        if not existing_comment:
+            return {
+                    "message":"Comment already exists!"
+            },400
 
-        if ArticleExistsCheck is not None and CommentExistsCheck is None:
-            newComment=Comment(article_id=article_id,content=content,hidden=hidden)
-            db.session.add(newComment)
-            ArticleExistsCheck.updated_at=datetime.now()
-            db.session.commit()
-            return {"status":201,"message":"Request successful",
-                    "articleID":article_id,
-                    "commentID":newComment.id,
-                    "content":newComment.content,
-                    "posted_at":str(newComment.posted_at)},201
-        else:
-            if ArticleExistsCheck is None:
-                return {"status":404,"message":"Article doesn't exist!"},404
-            if CommentExistsCheck is not None:
-                return {"status":400,"message":"Comment already exists!"},400
+        new_comment = Comment(
+                                article_id=article_id,
+                                content=content,
+                                hidden=hidden
+        )
+
+        db.session.add(new_comment)
+        article.updated_at=datetime.now()
+        db.session.commit()
+
+        return {
+                "message":"Request successful",
+                "id":new_comment.id,
+                "content":new_comment.content,
+                "posted_at":str(new_comment.posted_at),
+                "article_id":new_comment.article_id,
+                "hidden":new_comment.hidden
+        },201
+                
         
 
-    def delete(self,comment_UUID=None):
-
-        malformed=[None]
-        if comment_UUID in malformed:
-            return {"message":"Malformed request","status":400},400
+    def delete(self,comment_id=None):
+        if not comment_id:
+            return {
+                    "message":"Malformed request"
+            },400
         
-        x=Comment.query.filter_by(id=comment_UUID).first()
-
-        if x==None:
-            return {"status":404,"message":"Comment doesn't exist!"},404
-        else:
-            db.session.delete(x)
-            db.session.commit()
-            return {"status":200,"message":"Deletion successful!"},200
+        comment = Comment.query.filter_by(id=comment_id).first()
+        if not comment:
+            return {
+                    "message":"Comment doesn't exist!"
+            },404
+    
+        db.session.delete(comment)
+        db.session.commit()
+        return {
+                "message":"Deletion successful!"
+        },200

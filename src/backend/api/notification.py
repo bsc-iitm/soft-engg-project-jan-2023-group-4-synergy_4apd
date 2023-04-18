@@ -23,18 +23,23 @@ class NotificationAPI(Resource):
     
     def put(self,notification_id=None):
         if not notification_id:
-            return {"message":"Malformed request"},400
+            return {
+                    "message":"Malformed request"
+            },400
         
         notification = Notification.query.filter_by(id=notification_id,recipient_id=current_user.id).first()
         if not notification:
-            return {"message":"Notification not found"},404
+            return {
+                    "message":"Notification not found"
+            },404
         
         notification.read = True
         db.session.commit()
-        return {"message":"Notification read"},200
+        return {
+                "message":"Notification read"
+        },200
     
     def post(self):
-        
         args=create_notification_parser.parse_args()
         sender_id=args.get('sender_id',None)
         recipient_id=args.get('recipient_id',None)
@@ -43,26 +48,37 @@ class NotificationAPI(Resource):
 
         malformed=[None,'']
         if recipient_id in malformed or content in malformed:
-            return {"status":400,"message":"Malformed request!"},400
+            return {
+                    "message":"Malformed request!"
+            },400
         
-        RecipientExistsCheck=User.query.filter_by(id=recipient_id).first()
-        if RecipientExistsCheck is None:
-            return {"status":404,"message":"Notification recipient not found!"},404
+        recipient = User.query.filter_by(id=recipient_id).first()
+        if not recipient:
+            return {
+                    "message":"Notification recipient not found!"
+            },404
         
-        newNotification=Notification(sender_id=sender_id,
-                                     recipient_id=recipient_id,
-                                     content=content,
-                                     action_url=action_url,
-                                     read=False)
+        new_notification=Notification(
+                                        sender_id=sender_id,
+                                        recipient_id=recipient_id,
+                                        content=content,
+                                        action_url=action_url,
+                                        read=False
+        )
         
-        db.session.add(newNotification)
+        db.session.add(new_notification)
         db.session.commit()
 
-        output=[]
-        output.append(newNotification)
-
-        return {"status":201,"message":"Notification created succesfully!",
-                "notification":stringify_notifications(output)},201
+        return {
+                "message":"Notification created succesfully!",
+                "id":new_notification.id,
+                "sender_id":new_notification.sender_id,
+                "recipient_id":new_notification.recipient_id,
+                "content":new_notification.content,
+                "action_url":new_notification.action_url,
+                "timestamp":str(new_notification.timestamp),
+                "read":new_notification.read
+        },201
 
 
 

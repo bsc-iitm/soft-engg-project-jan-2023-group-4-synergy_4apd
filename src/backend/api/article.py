@@ -20,14 +20,15 @@ class ArticleAPI(Resource):
     
     def post(self):
         args=create_article_parser.parse_args()
-
         title=args.get('title',None)
         content=args.get('content',None)
         tags=args.get('tags',None)
 
         malformed=[None,'']
         if title in malformed or content in malformed:
-            return {"message":"Malformed request","status":400},400
+            return {
+                    "message":"Malformed request"
+            },400
 
         new_article = Article(
                                 title = title,
@@ -42,110 +43,117 @@ class ArticleAPI(Resource):
                 if not existing_tag:
                     new_tag = Tag(name=tag)
                     db.session.add(new_tag)
-                    db.session.commit()
-                    
-            for tag in tags:
-                existing_tag = Tag.query.filter_by(name=tag).first()
-                new_article.tags.append(existing_tag)
+                    new_article.tags.append(new_tag)
+                else:
+                    new_article.tags.append(existing_tag)                
 
         db.session.add(new_article)
         db.session.commit()
+
         return {
-                "status" : 201,
-                "article_id" : new_article.id,
                 "message": "Article created successfully",
+                "id" : new_article.id,
+                "creator" : new_article.creator,
                 "title" : new_article.title,
                 "content" : new_article.content,
                 "created_at" : str(new_article.created_at),
-                "creator" : new_article.creator,
-                'tags': stringify_tags(new_article.tags),
-                "updated_at" : str(new_article.updated_at)
+                "updated_at" : str(new_article.updated_at),
+                "tags" : stringify_tags(new_article.tags)
         },201
             
     def get(self,article_id=None):
         if not article_id:
             articles = Article.query.all()
             return {
-                    "status" : 200,
                     "message" : "Request successful",
                     "articles" : stringify_articles(articles)
             },200
-        else:
-            article = Article.query.filter_by(id=article_id).first()
-            if not article:
-                return {"message":"Article doesn't exist"},404
-            
-            comments = Comment.query.filter_by(article_id=article.id).all()
-            return {
-                    "article_id" : article.id,
-                    "title" : article.title,
-                    "content" : article.content,
-                    "creator" : article.creator,
-                    "created_at" : str(article.created_at),
-                    "updated_at" : str(article.updated_at),
-                    "comments": stringify_comments(comments),
-                    "tags": stringify_tags(article.tags)
-            },200
-            
-    def put(self,article_id=None):
-
-        malformed=[None,'']
-        if article_id in malformed:
-            return {'message':'Malformed request!'},400
         
         article = Article.query.filter_by(id=article_id).first()
         if not article:
-            return {"message":"Article doesn't exist"},404
+            return {
+                    "message":"Article doesn't exist"
+            },404
         
-        args = put_article_parser.parse_args()
+        comments = Comment.query.filter_by(article_id=article.id).all()
+        return {
+                "id" : article.id,
+                "creator" : article.creator,
+                "title" : article.title,
+                "content" : article.content,
+                "created_at" : str(article.created_at),
+                "updated_at" : str(article.updated_at),
+                "comments": stringify_comments(comments),
+                "tags": stringify_tags(article.tags)
+        },200
             
+    def put(self,article_id=None):
+        malformed=[None,'']
+        if article_id in malformed:
+            return {
+                    'message':'Malformed request!'
+            },400
+        
+        article = Article.query.filter_by(id=article_id).first()
+        if not article:
+            return {
+                    "message":"Article doesn't exist"
+            },404
+        
+        args = put_article_parser.parse_args() 
         title = args.get('title',article.title)
         content = args.get('content',article.content)
         tags = args.get('tags',None)
-
         
         if title in malformed or content in malformed:
-            return {'message':'Malformed request!'},400
+            return {
+                    'message':'Malformed request!'
+            },400
         
         article.title = title
         article.content = content
         article.updated_at = datetime.now()
-      
         
         if tags not in malformed:
             tags = tags.split(",")
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
                 if not existing_tag:
-                    try:
-                        new_tag = Tag(name=tag)
-                        db.session.add(new_tag)
-                        db.session.commit()
-                    except:
-                        return {'message':'Internal server error'},500
-            
-            article.tags=[]
-            for tag in tags:
-                existing_tag = Tag.query.filter_by(name=tag).first()
-                article.tags.append(existing_tag)
-        
-        if tags=="":
-            article.tags=[]
+                    new_tag = Tag(name=tag)
+                    db.session.add(new_tag)
+                    article.tags.append(new_tag)
+                else:
+                    article.tags.append(existing_tag)
 
         db.session.commit()
 
-        article = Article.query.filter_by(id=article_id).all()
-        return {'message':'Article modified successfully',"article":stringify_articles(article)},200
+        return {
+                "message": "Article modified successfully",
+                "id" : article.id,
+                "creator" : article.creator,
+                "title" : article.title,
+                "content" : article.content,
+                "created_at" : str(article.created_at),
+                "updated_at" : str(article.updated_at),
+                "tags" : stringify_tags(article.tags)
+        },200
 
         
     def delete(self,article_id=None):
         if not article_id:
-            return {'message':'Malformed request!'},400
+            return {
+                    'message':'Malformed request!'
+            },400
         
         article = Article.query.filter_by(id=article_id).first()
         if not article:
-            return {"message":"Article doesn't exist"},404
+            return {
+                    "message":"Article doesn't exist"
+            },404
         
         db.session.delete(article)
         db.session.commit()
-        return {'message':'Article deleted successfully'},200
+        
+        return {
+                'message':'Article deleted successfully'
+        },200

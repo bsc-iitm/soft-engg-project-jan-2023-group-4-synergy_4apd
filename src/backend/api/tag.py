@@ -1,8 +1,9 @@
 from flask_restful import reqparse,Resource
 from backend.models import *
+from backend.utils import stringify_tags
 
 create_tag_parser=reqparse.RequestParser()
-create_tag_parser.add_argument('name')
+create_tag_parser.add_argument('name',required=True)
 create_tag_parser.add_argument('description')       
 
 modify_tag_parser=reqparse.RequestParser()
@@ -11,99 +12,95 @@ modify_tag_parser.add_argument('name')
 modify_tag_parser.add_argument('description')
 
 get_tag_parser=reqparse.RequestParser()
-get_tag_parser.add_argument('tagIDList',location='args')
-get_tag_parser.add_argument('name',location='args')
+get_tag_parser.add_argument('name',location='args',required=True)
+get_tag_parser.add_argument('tagIDList',location='args',required=True)
 
 
 class TagAPI(Resource):
     def get(self):
+        args=get_tag_parser.parse_args()
+        name = args.get('name',None)
+        tagIDList = args.get('tagIDList',None)
+
+        if tagIDList=="all":
+            tags = Tag.query.all()
+            return {
+                "message":"Request successful",
+                "tags":stringify_tags(tags)
+            },200
         
-        d=get_tag_parser.parse_args()
-        ret = d.get('tagIDList',None)
-        retname = d.get('name',None)
-        if (ret=='' or ret is None) and (retname=='' or retname is None):
-            return {"status":400,"message":"Malformed request!"},400
+        elif name:
+            tags = Tag.query.filter_by(name=name).all()
+            return {
+                    "message":"Request successful",
+                    "tags":stringify_tags(tags)
+            },200
+                        
+        elif tagIDList:
+            tagIDList = tagIDList.split(",")
+            tagList = [Tag.query.filter_by(id=tagID).first() for tagID in tagIDList]
+            print(tagList)
+            return {
+                "message":"Request successful",
+                "tags":stringify_tags(tagList)
+            },200
         
-        if retname is not None and retname != '':
-            namelist,retdict=[],[]
-            for i in retname.strip().split(','):
-                    namelist.append(i)
-            missing=False
-            for i in namelist:
-                tagn=Tag.query.filter_by(name=i).first()
-                if tagn is not None:
-                    retdict.append({"tagID":tagn.id,"name":tagn.name,"description":tagn.description})
-                else:
-                    missing=True
-                    continue
-
-            if missing and len(retdict)==0:
-                return {"status":404,"message":"No matching tags found!"},404
-            
-            return {"status":200,"message":"Request successful","tags":retdict},200
-
-        if ret is not None:
-            idl=ret.strip().split(',')
-            tagIDList,retdict=[],[]
-
-            for i in idl:
-                try:
-                    tagIDList.append(int(i))
-                except ValueError:
-                    tagIDList.append(i)
-            print(tagIDList)
-            if tagIDList[0]=="all":
-                tagi=Tag.query.all()
-                for i in tagi:
-                    retdict.append({"tagID":i.id,"name":i.name,"description":i.description})
-                return {"status":200,"message":"Request successful","tags":retdict},200
-            else:
-                missing=False        
-                for i in tagIDList:
-                    tagi=Tag.query.filter_by(id=i).first()
-                    if tagi is not None:
-                        retdict.append({"tagID":tagi.id,"name":tagi.name,"description":tagi.description})
-                    else:
-                        missing=True
-                        continue
-
-            if missing and len(retdict)==0:
-                return {"status":404,"message":"No matching tags found!"},404
-            
-            return {"status":200,"message":"Request successful","tags":retdict},200
-
-    def post(self):
-        d=create_tag_parser.parse_args()
-        tagName,tagDescription=d.get('name',None),d.get('description',None)
-
-        if tagName=='' or tagName is None:
-            return {"status":400,"message":"Malformed request!"},400
-
-        x=Tag.query.filter_by(name=tagName).first()
-
-        if x is None:
-        
-            dbObj=Tag(name=tagName,description=tagDescription)
-            db.session.add(dbObj)
-            db.session.commit()
-
-            return {"status":201,"message":"Request successful","tagID":dbObj.id,"tagName":dbObj.name,"tagDescription":dbObj.description},201
         else:
-            return {"status":200,"message":"Tag already exists!"},200
+            return {
+                    "message":"Malformed request!"
+            },400
+    
+    def post(self):
+        args=create_tag_parser.parse_args()
+        name = args.get('name',None)
+        description = args.get('description',"")
+
+        if name == '':
+            return {
+                    "message":"Malformed request!"
+            },400
+
+        existing_tag = Tag.query.filter_by(name=name).first()
+        if existing_tag:
+            return {
+                    "message":"Tag already exists!"
+            },200
+        
+        new_tag = Tag(
+                        name=name,
+                        description=description
+        )
+
+        db.session.add(new_tag)
+        db.session.commit()
+
+        return {
+                "message":"Request successful",
+                "id":new_tag.id,
+                "name":new_tag.name,
+                "description":new_tag.description
+        },201
+            
     
 
     def delete(self,tag_id=None):
 
-        if tag_id=='' or tag_id is None:
-            return {"status":400,"message":"Malformed request!"},400
+        if not tag_id:
+            return {
+                    "message":"Malformed request!"
+            },400
 
-        x=Tag.query.filter_by(id=tag_id).first()
+        tag = Tag.query.filter_by(id=tag_id).first()
 
-        if x==None:
-            return {"status":404,"message":"Tag doesn't exist!"},404
-        else:
-            db.session.delete(x)
-            db.session.commit()
-            return {"status":200,"message":"Deletion successful!"},200
+        if not tag:
+            return {
+                    "message":"Tag doesn't exist!"
+            },404
+        
+        db.session.delete(tag)
+        db.session.commit()
+        return {
+                "message":"Tag successfully deleted"
+        },200
         
             
