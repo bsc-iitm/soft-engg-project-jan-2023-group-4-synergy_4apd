@@ -22,7 +22,7 @@ api = Api(app)
 cors = CORS(app)
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, register_form=CustomRegisterForm)
+security = Security(app, user_datastore, confirm_register_form=CustomRegisterForm, register_form=CustomRegisterForm)
 
 api.add_resource(TicketAPI, '/api/v1/tickets/', '/api/v1/tickets/<string:ticket_id>/')
 api.add_resource(MessageAPI, '/api/v1/messages/', '/api/v1/messages/<string:message_id>/')
