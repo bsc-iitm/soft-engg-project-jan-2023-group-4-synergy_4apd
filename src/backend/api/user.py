@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from flask_security import login_required,roles_required
 from sqlalchemy.dialects.sqlite import BLOB
 from flask_security.utils import hash_password
 from flask_login import current_user
@@ -15,6 +16,8 @@ edit_user_parser.add_argument('profile_pic',type=BLOB)
 
 class UserAPI(Resource):
 
+    @login_required
+    @roles_required('user')
     def put(self):
         user = User.query.filter_by(id=current_user.id).first()
         args=edit_user_parser.parse_args()
@@ -52,6 +55,8 @@ class UserAPI(Resource):
                 "profile_pic":user.profile_pic
         },200
     
+    @login_required
+    @roles_required('user')
     def get(self):
         user = User.query.filter_by(id=current_user.id).first()
         return{

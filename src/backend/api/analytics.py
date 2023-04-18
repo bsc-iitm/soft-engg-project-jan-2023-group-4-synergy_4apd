@@ -1,5 +1,6 @@
 from flask_login import current_user
 from flask_restful import Resource,reqparse
+from flask_security import roles_required,login_required
 from backend.models import *
 from backend.utils import *
 
@@ -10,7 +11,7 @@ def getMessages():
     return Message.query.all()
 
 def getArticles():
-    return Article.query.all()\
+    return Article.query.all()
 
 def getComments():
     return Comment.query.all()
@@ -25,7 +26,9 @@ def getNotifications():
     return Notification.query.all()
 
 class AnalyticsAPI(Resource):
-            
+
+    @login_required
+    @roles_required('admin')        
     def get(self):
         tickets=getTickets()
         openTickets,inProgressTickets,resolvedTickets=0,0,0

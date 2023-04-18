@@ -1,4 +1,4 @@
-from flask_security import login_required
+from flask_security import login_required,roles_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -14,7 +14,11 @@ get_message_parser.add_argument('start',location='args',type=int,required=True,n
 get_message_parser.add_argument('count',location='args',type=int,required=True,nullable=False)
 get_message_parser.add_argument('ticket_id',location='args',required=True,nullable=False)
 
+
 class MessageAPI(Resource):
+
+    @login_required
+    @roles_required('user')
     def post(self):
         args=create_message_parser.parse_args()
         text = args.get('text',None)
@@ -61,6 +65,8 @@ class MessageAPI(Resource):
                 'flagged':new_message.flagged
         },201
 
+    @login_required
+    @roles_required('user')
     def get(self):
         args=get_message_parser.parse_args()
         start = args.get('start',0)
@@ -95,7 +101,9 @@ class MessageAPI(Resource):
                 'last_response_time':str(ticket.last_response_time),
                 'messages': stringify_messages(messages)
         },200
-        
+
+    @login_required
+    @roles_required('user')   
     def delete(self,message_id=None):
         if not message_id:
             return {

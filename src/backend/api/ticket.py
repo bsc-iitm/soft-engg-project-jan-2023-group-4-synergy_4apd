@@ -1,4 +1,4 @@
-from flask_security import login_required, auth_required
+from flask_security import login_required, auth_required,roles_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -21,7 +21,9 @@ put_ticket_parser.add_argument('assignee',nullable=False)
 
 class TicketAPI(Resource):
     
-    @auth_required("token")
+    # @auth_required("token")
+    @login_required
+    @roles_required('user')
     def post(self):
         args=create_ticket_parser.parse_args()
         title=args.get('title',None)
@@ -47,11 +49,7 @@ class TicketAPI(Resource):
             tags = tags.split(",")
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
-                if not existing_tag:
-                    new_tag = Tag(name=tag)
-                    db.session.add(new_tag)
-                    new_ticket.tags.append(new_tag)
-                else:
+                if existing_tag:
                     new_ticket.tags.append(existing_tag)
 
         db.session.add(new_ticket)
@@ -80,7 +78,9 @@ class TicketAPI(Resource):
                 'tags': stringify_tags(new_ticket.tags),
                 "last_response_time": str(new_ticket.last_response_time)
         },201
-            
+    
+    @login_required
+    @roles_required('user')
     def get(self,ticket_id=None):
         if not ticket_id:
             tickets = Ticket.query.filter_by(is_public=True).all()
@@ -110,6 +110,8 @@ class TicketAPI(Resource):
                 'tags': stringify_tags(ticket.tags)
         },200
 
+    @login_required
+    @roles_required('user')
     def put(self,ticket_id=None):
         malformed=[None,'']
         if not ticket_id:
@@ -122,6 +124,9 @@ class TicketAPI(Resource):
             return {
                     "message":"Ticket doesn't exist"
             },404
+        
+        if ticket.creator!=current_user.id and 'support_staff' not in current_user.roles:
+            return {"message":"Forbidden!"},403
     
         args=put_ticket_parser.parse_args()
         title=args.get('title',ticket.title)
@@ -136,11 +141,7 @@ class TicketAPI(Resource):
             tags = tags.split(",")
             for tag in tags:
                 existing_tag = Tag.query.filter_by(name=tag).first()
-                if not existing_tag:
-                        new_tag = Tag(name=tag)
-                        db.session.add(new_tag)
-                        ticket.tags.append(new_tag)
-                else:
+                if existing_tag:
                     ticket.tags.append(existing_tag)
         
         ticket.title = title
@@ -166,6 +167,8 @@ class TicketAPI(Resource):
                 'tags': stringify_tags(ticket.tags)
         },200
 
+    @login_required
+    @roles_required('user')
     def delete(self,ticket_id=None):
         if not ticket_id:
             return {
@@ -177,6 +180,9 @@ class TicketAPI(Resource):
             return {
                     "message":"Ticket doesn't exist"
             },404
+        
+        if ticket.creator!=current_user.id and 'support_staff' not in current_user.roles:
+            return {"message":"Forbidden!"},403
         
         messages = Message.query.filter_by(ticket_id=ticket_id).all()
         if messages:
@@ -190,6 +196,9 @@ class TicketAPI(Resource):
         },200
 
 class MyTicketsAPI(Resource):
+
+    @login_required
+    @roles_required('user')
     def get(self):
         tickets = Ticket.query.filter_by(creator=current_user.id).all()
         return {

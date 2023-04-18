@@ -1,4 +1,4 @@
-from flask_security import login_required
+from flask_security import login_required,roles_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -11,6 +11,9 @@ create_notification_parser.add_argument('content',nullable=True)
 create_notification_parser.add_argument('action_url',nullable=True)
 
 class NotificationAPI(Resource):
+
+    @login_required
+    @roles_required('user')
     def get(self):
         unread_notifications = Notification.query.filter_by(read=False,recipient_id=current_user.id).all()
         return {
@@ -19,6 +22,8 @@ class NotificationAPI(Resource):
                 'notifications': stringify_notifications(unread_notifications)
         },200
     
+    @login_required
+    @roles_required('user')
     def put(self,notification_id=None):
         if not notification_id:
             return {
@@ -37,6 +42,8 @@ class NotificationAPI(Resource):
                 "message":"Notification read"
         },200
     
+    @login_required
+    @roles_required('user')
     def post(self):
         args=create_notification_parser.parse_args()
         sender_id=args.get('sender_id',None)

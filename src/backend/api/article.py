@@ -1,4 +1,4 @@
-from flask_security import login_required
+from flask_security import login_required,roles_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -17,6 +17,8 @@ put_article_parser.add_argument('tags',nullable=False)
 
 class ArticleAPI(Resource):
     
+    @login_required
+    @roles_required('support_staff')   
     def post(self):
         args=create_article_parser.parse_args()
         title=args.get('title',None)
@@ -59,7 +61,9 @@ class ArticleAPI(Resource):
                 "updated_at" : str(new_article.updated_at),
                 "tags" : stringify_tags(new_article.tags)
         },201
-            
+    
+    @login_required
+    @roles_required('user')
     def get(self,article_id=None):
         if not article_id:
             articles = Article.query.all()
@@ -85,7 +89,9 @@ class ArticleAPI(Resource):
                 "comments": stringify_comments(comments),
                 "tags": stringify_tags(article.tags)
         },200
-            
+
+    @login_required
+    @roles_required('support_staff')        
     def put(self,article_id=None):
         malformed=[None,'']
         if article_id in malformed:
@@ -136,7 +142,9 @@ class ArticleAPI(Resource):
                 "updated_at" : str(article.updated_at),
                 "tags" : stringify_tags(article.tags)
         },200
-        
+
+    @login_required
+    @roles_required('support_staff')    
     def delete(self,article_id=None):
         if not article_id:
             return {

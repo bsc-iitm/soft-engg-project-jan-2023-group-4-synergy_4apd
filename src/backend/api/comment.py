@@ -1,5 +1,6 @@
 from flask_login import current_user
 from flask_restful import reqparse,Resource
+from flask_security import login_required,roles_required
 from backend.models import *
 from datetime import datetime
 from backend.utils import stringify_comments
@@ -12,7 +13,10 @@ create_comment_parser.add_argument('hidden',type=bool,default=False,nullable=Fal
 get_comment_parser=reqparse.RequestParser()
 get_comment_parser.add_argument('articleUUID',location='args',required=True)
 
+
 class CommentAPI(Resource):
+    @login_required
+    @roles_required('user')
     def get(self):
         args=get_comment_parser.parse_args()
         article_id=args.get('articleUUID',None)
@@ -37,6 +41,8 @@ class CommentAPI(Resource):
                 "comments":stringify_comments(comments)
         },200
 
+    @login_required
+    @roles_required('support_staff')
     def post(self):
         args=create_comment_parser.parse_args()
         article_id=args.get('articleUUID',None)
@@ -79,7 +85,10 @@ class CommentAPI(Resource):
                 "article_id":new_comment.article_id,
                 "hidden":new_comment.hidden
         },201
-
+                
+        
+    @login_required
+    @roles_required('support_staff')
     def delete(self,comment_id=None):
         if not comment_id:
             return {

@@ -1,4 +1,5 @@
 from flask_restful import reqparse,Resource
+from flask_security import roles_required,login_required
 from backend.models import *
 from backend.utils import stringify_tags
 
@@ -16,6 +17,9 @@ get_tag_parser.add_argument('name',location='args',required=True)
 get_tag_parser.add_argument('tagIDList',location='args',required=True)
 
 class TagAPI(Resource):
+
+    @login_required
+    @roles_required('user')
     def get(self):
         args=get_tag_parser.parse_args()
         name = args.get('name',None)
@@ -48,7 +52,9 @@ class TagAPI(Resource):
             return {
                     "message":"Malformed request!"
             },400
-    
+        
+    @login_required
+    @roles_required('support_staff')
     def post(self):
         args=create_tag_parser.parse_args()
         name = args.get('name',None)
@@ -80,6 +86,8 @@ class TagAPI(Resource):
                 "description":new_tag.description
         },201
 
+    @login_required
+    @roles_required('support_staff')
     def delete(self,tag_id=None):
         if not tag_id:
             return {
