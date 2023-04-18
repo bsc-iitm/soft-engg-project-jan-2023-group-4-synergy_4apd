@@ -77,6 +77,7 @@ def stringify_notifications(notifications):
         notification_format = {
                             "id" : notification.id,
                             "sender_id" : notification.sender_id,
+                            "recipient_id":notification.recipient_id,
                             "content" : notification.content,
                             "action_url" : notification.action_url,
                             "timestamp" : str(notification.timestamp),

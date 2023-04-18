@@ -1288,7 +1288,7 @@ paths:
                       "message":"Internal server error"
                       
                     }
-  /api/v1/comments/<commentUUID>:
+  /api/v1/comments/<UUID_comment>:
     summary: COMMENT API ENDPOINT - Admins ONLY    
     
     delete:
@@ -1525,7 +1525,7 @@ paths:
                       "message":"Internal server error"
                       
                     }
-  /api/v1/tags/<tagUUID>:
+  /api/v1/tags/<UUID_tag>:
     summary: TAG API ENDPOINT - Admins ONLY    
     
     delete:
@@ -1597,3 +1597,277 @@ paths:
                       "message":"Internal server error"
                       
                     }
+  /api/v1/notifications:
+    summary: Notifications API Endpoint
+  
+    get:
+      summary: Getting all unread notifications of the logged-in user
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Notification GET Request:
+                  value: 
+                    {
+                        "status": 200,
+                        "message": "Request successful",
+                        "notifications": [
+                            {
+                                "id": "fe5347ee-295c-4377-92f0-325bf64fb7f9",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "HelloWorld",
+                                "action_url": null,
+                                "timestamp": "2023-04-18 07:13:14",
+                                "read": false
+                            },
+                            {
+                                "id": "a6bb5fe1-d381-4842-bac3-4b2de0a31f58",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification of Ticket Escalation",
+                                "action_url": "URL of escalated ticket",
+                                "timestamp": "2023-04-18 07:14:35",
+                                "read": false
+                            },
+                            {
+                                "id": "a052555b-93b4-474f-8a5c-917cce5d49d2",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification of Ticket Escalation",
+                                "action_url": "<URL of escalated ticket>",
+                                "timestamp": "2023-04-18 07:14:47",
+                                "read": false
+                            },
+                            {
+                                "id": "1ab172e7-073d-43ef-bf2b-9a7a618f2cdb",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification of Ticket Escalation",
+                                "action_url": "<URL of escalated ticket>",
+                                "timestamp": "2023-04-18 07:24:06",
+                                "read": false
+                            },
+                            {
+                                "id": "12e65b5a-0c22-4fb3-a33d-a6d6b1c33b69",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification2",
+                                "action_url": null,
+                                "timestamp": "2023-04-18 07:24:59",
+                                "read": false
+                            },
+                            {
+                                "id": "a0f7ac04-377b-4e2a-9a98-4ac5a8b8f0e3",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification3",
+                                "action_url": null,
+                                "timestamp": "2023-04-18 07:25:05",
+                                "read": false
+                            },
+                            {
+                                "id": "04605369-590b-4ac8-a931-d4b7385f6ee8",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification4",
+                                "action_url": null,
+                                "timestamp": "2023-04-18 07:25:08",
+                                "read": false
+                            },
+                            {
+                                "id": "e919cf76-429c-455c-843a-3edf96e75a53",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification5",
+                                "action_url": null,
+                                "timestamp": "2023-04-18 07:25:10",
+                                "read": false
+                            }
+                        ]
+                      }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                      
+                    }
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+    post:
+      summary: Creating a new notification for a particular user
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        201:
+          description: Valid notification created
+          content:
+            application/json:
+              examples:
+                Valid Notification Created:
+                  value: 
+                    {
+                        "status": 201,
+                        "message": "Notification created succesfully!",
+                        "notification": [
+                            {
+                                "id": "1ab172e7-073d-43ef-bf2b-9a7a618f2cdb",
+                                "sender_id": null,
+                                "recipient_id": "98f02af8-eb30-4846-af0a-a6c45e7eaf58",
+                                "content": "Urgent Notification of Ticket Escalation",
+                                "action_url": "<URL of escalated ticket>",
+                                "timestamp": "2023-04-18 07:24:06",
+                                "read": false
+                            }
+                        ]
+                    }
+        400:
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: 
+                    {
+                      "status":400,
+                      "message":"Malformed request!"                      
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: 
+                    {
+                      "status":403,
+                      "message":"No access rights, forbidden!"
+                    }
+        404:
+          description: Recipient not found
+          content:
+            application/json:
+              examples:
+                Wrong Recipient UUID supplied:
+                  value: |
+                    {
+                      "status": 404,
+                      "message": "Notification recipient not found!"
+                    }
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: 
+                    {
+                      "status":500,
+                      "message":"Internal server error"
+                      
+                    }
+
+  /api/v1/notifications/<UUID_notification>:
+    summary: Notifications API PUT Endpoint
+
+    put:
+      summary: Notification Modification (Unread to Read)
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      
+      responses:
+        '200':
+          description: Notification read successfully
+          content:
+            application/json:
+              examples:
+                Valid Notification Read:
+                  value: |
+                    {
+                      "message": "Notification read"
+                    }
+        '400':
+          description: Malformed request
+          content:
+            application/json:
+              examples:
+                Malformed Request:
+                  value: |
+                    {"message":"Malformed request!"}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"status":403,"message":"No access rights, forbidden!"}
+        404:
+          description: Notification not found
+          content:
+            application/json:
+              examples:
+                Wrong Notification UUID supplied:
+                  value: |
+                      {
+                          "message": "Notification not found"
+                      }
+        
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"status":500,"message":"Internal server error"}
