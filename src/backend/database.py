@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 # Use the following when calling database from a backend job.
 '''
 from sqlalchemy import create_engine

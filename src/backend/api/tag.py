@@ -15,7 +15,6 @@ get_tag_parser=reqparse.RequestParser()
 get_tag_parser.add_argument('name',location='args',required=True)
 get_tag_parser.add_argument('tagIDList',location='args',required=True)
 
-
 class TagAPI(Resource):
     def get(self):
         args=get_tag_parser.parse_args()
@@ -80,11 +79,8 @@ class TagAPI(Resource):
                 "name":new_tag.name,
                 "description":new_tag.description
         },201
-            
-    
 
     def delete(self,tag_id=None):
-
         if not tag_id:
             return {
                     "message":"Malformed request!"
@@ -101,6 +97,4 @@ class TagAPI(Resource):
         db.session.commit()
         return {
                 "message":"Tag successfully deleted"
-        },200
-        
-            
+        },200          

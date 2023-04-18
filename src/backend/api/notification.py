@@ -10,9 +10,7 @@ create_notification_parser.add_argument('recipient_id',required=True,nullable=Fa
 create_notification_parser.add_argument('content',nullable=True)
 create_notification_parser.add_argument('action_url',nullable=True)
 
-
 class NotificationAPI(Resource):
-
     def get(self):
         unread_notifications = Notification.query.filter_by(read=False,recipient_id=current_user.id).all()
         return {
@@ -79,10 +77,3 @@ class NotificationAPI(Resource):
                 "timestamp":str(new_notification.timestamp),
                 "read":new_notification.read
         },201
-
-
-
-
-
-        
-

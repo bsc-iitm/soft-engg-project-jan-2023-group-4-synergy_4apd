@@ -19,7 +19,6 @@ put_ticket_parser.add_argument('tags',nullable=False)
 put_ticket_parser.add_argument('votes',type=int,nullable=False)
 put_ticket_parser.add_argument('assignee',nullable=False)
 
-
 class TicketAPI(Resource):
     
     @auth_required("token")

@@ -39,7 +39,6 @@ class UserAPI(Resource):
         user.bio = bio
         user.phone = phone
         user.profile_pic = profile_pic
-
         
         db.session.commit()
         

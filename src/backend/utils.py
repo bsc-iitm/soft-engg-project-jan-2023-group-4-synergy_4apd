@@ -1,12 +1,8 @@
 from uuid import uuid4
 from backend.models import *
-from datetime import datetime
 
 def create_uuid():
     return str(uuid4())
-
-def setTime():
-    return datetime.now()
 
 def stringify_tickets(tickets):
     ticket_list = []

@@ -15,7 +15,6 @@ put_article_parser.add_argument('title',required=True,nullable=False)
 put_article_parser.add_argument('content',required=True,nullable=False)
 put_article_parser.add_argument('tags',nullable=False)
 
-
 class ArticleAPI(Resource):
     
     def post(self):
@@ -137,7 +136,6 @@ class ArticleAPI(Resource):
                 "updated_at" : str(article.updated_at),
                 "tags" : stringify_tags(article.tags)
         },200
-
         
     def delete(self,article_id=None):
         if not article_id:

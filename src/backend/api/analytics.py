@@ -4,41 +4,31 @@ from backend.models import *
 from backend.utils import *
 
 def getTickets():
-    tickets=Ticket.query.all()
-    return list(tickets)
+    return Ticket.query.all()
 
 def getMessages():
-    messages=Message.query.all()
-    return list(messages)
+    return Message.query.all()
 
 def getArticles():
-    articles=Article.query.all()
-    return list(articles)
+    return Article.query.all()\
 
 def getComments():
-    comments=Comment.query.all()
-    return list(comments)
+    return Comment.query.all()
 
 def getTags():
-    tags=Tag.query.all()
-    return list(tags)
+    return Tag.query.all()
 
 def getUsers():
-    users=User.query.all()
-    return list(users)
+    return User.query.all()
 
 def getNotifications():
-    notifications=Notification.query.all()
-    return list(notifications)
-
+    return Notification.query.all()
 
 class AnalyticsAPI(Resource):
             
     def get(self):
-
-        tickets=getTickets()        
+        tickets=getTickets()
         openTickets,inProgressTickets,resolvedTickets=0,0,0
-
         for ticket in tickets:
             if ticket.status==0:
                 openTickets+=1
@@ -46,13 +36,10 @@ class AnalyticsAPI(Resource):
                 inProgressTickets+=1
             if ticket.status==2:
                 resolvedTickets+=1
-        
         totalTickets=len(tickets)
-      
 
         users=getUsers()
         userStudent,supportStaff,admin,superadmin=0,0,0,0
-
         for user in users:
             if 'superadmin' in user.roles:
                 superadmin+=1
@@ -62,13 +49,10 @@ class AnalyticsAPI(Resource):
                 supportStaff+=1
             else:
                 userStudent+=1
-        
         totalUsers=len(users)
-
 
         notifications=getNotifications()
         totalNotifications,unreadNotifications,readNotifications=0,0,0
-
         for notification in notifications:
             if notification.read:
                 readNotifications+=1
@@ -76,10 +60,8 @@ class AnalyticsAPI(Resource):
                 unreadNotifications+=1
         totalNotifications=len(notifications)
 
-
         messages=getMessages()
         totalMessages,hiddenMessages,flaggedMessages=0,0,0
-
         for message in messages:
             if message.flagged:
                 flaggedMessages+=1
@@ -87,23 +69,19 @@ class AnalyticsAPI(Resource):
                 hiddenMessages+=1
         totalMessages=len(messages)
 
-
         articles=getArticles()
         totalArticles=len(articles)
-
         
         tags=getTags()
         totalTags=len(tags)
 
         comments=getComments()
         totalComments,hiddenComments=0,0
-
         for comment in comments:
             if comment.hidden:
                 hiddenComments+=1
         totalComments=len(comments)
 
-        
         return {
             "message":"Request successful",
             "analytics": {
@@ -128,10 +106,3 @@ class AnalyticsAPI(Resource):
                 "hiddenComments":hiddenComments
                 }
             },200
-
-
-
-
-
-  
-    

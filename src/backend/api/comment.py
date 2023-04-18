@@ -12,7 +12,6 @@ create_comment_parser.add_argument('hidden',type=bool,default=False,nullable=Fal
 get_comment_parser=reqparse.RequestParser()
 get_comment_parser.add_argument('articleUUID',location='args',required=True)
 
-
 class CommentAPI(Resource):
     def get(self):
         args=get_comment_parser.parse_args()
@@ -37,7 +36,6 @@ class CommentAPI(Resource):
                 "article_id":article_id,
                 "comments":stringify_comments(comments)
         },200
-
 
     def post(self):
         args=create_comment_parser.parse_args()
@@ -81,8 +79,6 @@ class CommentAPI(Resource):
                 "article_id":new_comment.article_id,
                 "hidden":new_comment.hidden
         },201
-                
-        
 
     def delete(self,comment_id=None):
         if not comment_id:
