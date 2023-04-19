@@ -1831,7 +1831,7 @@ paths:
   /register:
     summary: User Registration Endpoint    
     post:
-      summary: Creating a new notification for a particular user
+      summary: Registering a new user
       description: ''
       operationId: ''
       requestBody:
