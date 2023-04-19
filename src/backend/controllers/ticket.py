@@ -2,8 +2,9 @@ from flask import render_template, request, redirect
 from flask_security import login_required, current_user
 
 from backend import app
-from backend.models import *
+from backend.database import db
 from backend.forms import TicketForm
+from backend.models import Ticket, Message
 
 from datetime import datetime
 
@@ -26,7 +27,7 @@ def create_ticket():
 
         return redirect(f'/ticket/{ticket.id}')
 
-    return render_template('dialogs/create_ticket_dialog.html', form=form,
+    return render_template('dialogs/create_update_dialog.html', form=form,
                            form_title='Create ticket', primary_button_text='Create')
 
 

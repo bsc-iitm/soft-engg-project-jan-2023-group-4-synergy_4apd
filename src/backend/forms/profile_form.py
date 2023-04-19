@@ -1,8 +1,8 @@
-from flask_security import RegisterForm
+from wtforms import Form
 from wtforms import StringField, TextAreaField, validators
 
 
-class CustomRegisterForm(RegisterForm):
+class ProfileForm(Form):
     name = StringField('Name', [validators.DataRequired('Name is required')])
     designation = StringField('Designation')
     
