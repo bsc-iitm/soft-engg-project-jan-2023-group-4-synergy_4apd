@@ -17,6 +17,7 @@ Flask-Security-Too==5.1.2
 Flask-SQLAlchemy==3.0.3
 Flask-WTF==1.1.1
 greenlet==2.0.2
+humanize==4.6.0
 idna==3.4
 iniconfig==2.0.0
 itsdangerous==2.1.2

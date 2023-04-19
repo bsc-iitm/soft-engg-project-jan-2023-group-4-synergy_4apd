@@ -12,3 +12,5 @@ class Message(db.Model):
     ticket_id = db.Column(db.String, db.ForeignKey('ticket.id'))
     hidden = db.Column(db.Boolean, default=False)
     flagged = db.Column(db.Boolean, default=False)
+
+    sender = db.relationship('User')

@@ -1,25 +1,16 @@
-from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
-from flask_security import Security, SQLAlchemyUserDatastore
 
-from backend.config import Config
-from backend.database import *
-from backend.models import User, Role
-from backend.forms import CustomRegisterForm
+from backend import app
+from backend.database import db
+from backend.controllers import *
 from backend.api import *
 
-app = Flask(__name__, template_folder='templates')
-app.app_context().push()
-app.config.from_object(Config)
+from humanize import naturaltime
 
-db.init_app(app)
 
 api = Api(app)
 cors = CORS(app)
-
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, confirm_register_form=CustomRegisterForm, register_form=CustomRegisterForm)
 
 api.add_resource(TicketAPI, '/api/v1/tickets/', '/api/v1/tickets/<string:ticket_id>/')
 api.add_resource(MessageAPI, '/api/v1/messages/', '/api/v1/messages/<string:message_id>/')
@@ -29,9 +20,12 @@ api.add_resource(NotificationAPI, '/api/v1/notifications/', '/api/v1/notificatio
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/','/api/v1/tags/<string:tag_id>')
 api.add_resource(AnalyticsAPI, '/api/v1/analytics/')
-api.add_resource(UserAPI, '/api/v1/users/')
-api.add_resource(RoleAPI, '/api/v1/admin/users/<string:user_id>')
 
+api.add_resource(RoleAPI, '/api/v1/admin/users/<string:user_id>/')
+
+@app.context_processor
+def utility_functions():
+    return dict(naturaltime=naturaltime)
 
 if __name__ == '__main__':
 
