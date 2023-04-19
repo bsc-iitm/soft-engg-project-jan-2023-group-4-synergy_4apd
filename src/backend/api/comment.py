@@ -62,7 +62,7 @@ class CommentAPI(Resource):
             },404
         
         existing_comment = Comment.query.filter_by(content=content,article_id=article_id).first()
-        if not existing_comment:
+        if existing_comment:
             return {
                     "message":"Comment already exists!"
             },400
