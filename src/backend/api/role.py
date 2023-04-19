@@ -16,7 +16,7 @@ class RoleAPI(Resource):
         args=edit_user_parser.parse_args()
         action=args.get('action',None)
 
-        user=User.query.filter)by(id=user_id)
+        user=User.query.filter_by(id=user_id)
         if not user:
             return {
                     "message":"Malformed request"
