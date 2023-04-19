@@ -1,0 +1,24 @@
+{% extends 'layout/base.html' %}
+{% set title = 'Home' %}
+
+{% block content %}
+<div class="d-flex flex-column">
+    {% include 'partials/actionbar.html' %}
+
+    <ul class="nav nav-tabs mt-3">
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if active_view == 'public' }}" href="/">Public Tickets</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ 'active' if active_view == 'private' }}" href="/my_tickets">My Tickets</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mb-3">
+        <div class="tab-pane fade show active"">
+            {% include 'partials/table.html' %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

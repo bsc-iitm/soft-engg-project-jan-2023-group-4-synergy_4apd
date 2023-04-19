@@ -1,8 +1,12 @@
 from uuid import uuid4
-from backend.models import *
+from humanize import naturaltime
+from datetime import datetime
 
 def create_uuid():
     return str(uuid4())
+
+def humanize_time(time):
+    return naturaltime(time, when=datetime.utcnow())
 
 def stringify_tickets(tickets):
     ticket_list = []

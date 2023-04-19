@@ -10,9 +10,13 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(SQLITE_DB_DIR, 'database.sqlite3')
 
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authorization'
+    SECURITY_TOKEN_MAX_AGE = 7200
+
     SECURITY_PASSWORD_HASH = 'bcrypt'
     SECURITY_PASSWORD_SALT = os.getenv('SECURITY_PASSWORD_SALT')
+    
     SECRET_KEY = os.getenv('SECRET_KEY')
+
     SECURITY_REGISTERABLE = True
     SECURITY_SEND_REGISTER_EMAIL = False
 

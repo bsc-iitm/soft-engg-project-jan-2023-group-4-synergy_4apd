@@ -1,5 +1,4 @@
 from backend.database import db
-from backend.utils import create_uuid
 from flask_security import RoleMixin
 
 class Role(db.Model, RoleMixin):

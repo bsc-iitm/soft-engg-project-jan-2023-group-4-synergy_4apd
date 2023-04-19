@@ -1,1 +1,2 @@
-from .custom_register_form import *
+from .register_form import CustomRegisterForm
+from .ticket_form import TicketForm

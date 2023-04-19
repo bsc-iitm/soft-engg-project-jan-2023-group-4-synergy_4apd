@@ -3,10 +3,10 @@ from flask_cors import CORS
 
 from backend import app, user_datastore
 from backend.database import db
-#from backend.controllers import *
+from backend.controllers import *
 from backend.api import *
 
-from humanize import naturaltime
+from backend.utils import humanize_time
 
 import flask_login
 
@@ -27,7 +27,7 @@ api.add_resource(RoleAPI, '/api/v1/admin/users/<string:user_id>/')
 
 @app.context_processor
 def utility_functions():
-    return dict(naturaltime=naturaltime)
+    return dict(humanize_time=humanize_time)
 
 def assign_default_role(app, user):
     if len(user.roles) == 0:
@@ -42,10 +42,10 @@ if __name__ == '__main__':
 
     roles = Role.query.all()
     if len(roles) == 0:
-        user_student=Role(name='user', description='Default users, mainly students')
-        support_staff=Role(name='support_staff', description='Support Staff')
-        admin=Role(name='admin', description='Administrator')
-        superadmin=Role(name='superadmin', description='Super Administrator')
+        user_student = Role(name='user', description='Default users, mainly students')
+        support_staff = Role(name='support_staff', description='Support Staff')
+        admin = Role(name='admin', description='Administrator')
+        superadmin = Role(name='superadmin', description='Super Administrator')
 
         db.session.add(user_student)
         db.session.add(support_staff)
