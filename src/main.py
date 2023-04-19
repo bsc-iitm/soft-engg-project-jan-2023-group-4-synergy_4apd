@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 from backend import app
 from backend.database import db
-from backend.controllers import *
+#from backend.controllers import *
 from backend.api import *
 
 from humanize import naturaltime
@@ -20,7 +20,7 @@ api.add_resource(NotificationAPI, '/api/v1/notifications/', '/api/v1/notificatio
 api.add_resource(MyTicketsAPI, '/api/v1/mytickets/')
 api.add_resource(TagAPI, '/api/v1/tags/','/api/v1/tags/<string:tag_id>')
 api.add_resource(AnalyticsAPI, '/api/v1/analytics/')
-
+api.add_resource(UserAPI, '/api/v1/users/')
 api.add_resource(RoleAPI, '/api/v1/admin/users/<string:user_id>/')
 
 @app.context_processor
@@ -30,4 +30,19 @@ def utility_functions():
 if __name__ == '__main__':
 
     db.create_all()
+
+    roles = Role.query.all()
+    if len(roles) == 0:
+
+        user_student=Role(name="user",description="Default users, mainly students")
+        support_staff=Role(name="support_staff",description="Support Staff")
+        admin=Role(name="admin",description="Administrator")
+        superadmin=Role(name="superadmin",description="Super Administrator")
+
+        db.session.add(user_student)
+        db.session.add(support_staff)
+        db.session.add(admin)
+        db.session.add(superadmin)
+        db.session.commit()
+
     app.run(host='0.0.0.0', port=8000)

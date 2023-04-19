@@ -11,7 +11,7 @@ edit_user_parser.add_argument('action',required=True,nullable=False)
 class RoleAPI(Resource):
 
     @roles_required("admin")
-    def put(self,user_id=None):
+    def put(self,user_id):
 
         args=edit_user_parser.parse_args()
         action=args.get('action',None)
