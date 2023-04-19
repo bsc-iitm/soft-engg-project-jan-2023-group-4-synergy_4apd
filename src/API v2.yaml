@@ -1827,3 +1827,404 @@ paths:
                 Internal Server Error:
                   value: |
                     {"message":"Internal server error"}
+
+  /register:
+    summary: User Registration Endpoint    
+    post:
+      summary: Creating a new notification for a particular user
+      description: ''
+      operationId: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example: >                
+                {
+                  "email":"test@demo.com",
+                  "name":"RoleTester",
+                  "password":"password",
+                  "password_confirm":"password"
+                }
+      responses:
+        201:
+          description: Valid user registered
+          content:
+            application/json:
+              examples:
+                Valid User Created:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 200
+                        },
+                        "response": {
+                            "csrf_token": "ImQwODJkOGE3ZDI5ZDhhMDY3Zjc0ZTViZTJjZTFiNWY0Mzg1YjQwYjIi.ZD-lfA.ohr4i5ZgMnRFKBWU-i1AjnF8AcA",
+                            "user": {}
+                        }
+                    }
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              examples:
+                Missing Email:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 400
+                        },
+                        "response": {
+                            "errors": [
+                                "Email not provided"
+                            ],
+                            "field_errors": {
+                                "email": [
+                                    "Email not provided"
+                                ]
+                            }
+                        }
+                    }
+                Missing Name:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 400
+                        },
+                        "response": {
+                            "errors": [
+                                "Name is required"
+                            ],
+                            "field_errors": {
+                                "name": [
+                                    "Name is required"
+                                ]
+                            }
+                        }
+                    }
+                Missing Password:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 400
+                        },
+                        "response": {
+                            "errors": [
+                                "Password not provided",
+                                "Passwords do not match"
+                            ],
+                            "field_errors": {
+                                "password": [
+                                    "Password not provided"
+                                ],
+                                "password_confirm": [
+                                    "Passwords do not match"
+                                ]
+                            }
+                        }
+                    }   
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: >
+                    {"message":"Internal server error"}
+  /login:
+    summary: User Login Endpoint    
+    post:
+      summary: Login endpoint for registered users
+      description: ''
+      operationId: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example: >                
+                {
+                  "email":"test@demo.com",
+                  "password":"password"
+                }
+      responses:
+        201:
+          description: Valid user logged in
+          content:
+            application/json:
+              examples:
+                Valid User Logged In:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 200
+                        },
+                        "response": {
+                            "csrf_token": "IjQzZmY5ZTFiM2FiNzJkYTg0MzgzYTgyYTBhNzhiOWFhN2M4ZTg3NzIi.ZD-4MA.akzYUkGXgernLWg5uWB2eWWzikE",
+                            "user": {
+                                "authentication_token": "WyI3ZmNkMzBlMzY3ZGE0ZGEzYTM4NzdjYmVmOWNmMTJiMSJd.ZD-4MA.1Z5cM6ejVcRhZFICzRkHeaJKGJM"
+                            }
+                        }
+                    }
+        400:
+          description: Invalid Email/Password
+          content:
+            application/json:
+              examples:
+                Invalid Password:
+                  value: >
+                    {
+                        "meta": {
+                            "code": 400
+                        },
+                        "response": {
+                            "errors": [
+                                "Invalid password"
+                            ],
+                            "field_errors": {
+                                "password": [
+                                    "Invalid password"
+                                ]
+                            }
+                        }
+                    }
+                Invalid Email:
+                  value: >
+                    {
+                      "meta": {
+                          "code": 400
+                      },
+                      "response": {
+                          "errors": [
+                              "Invalid email address"
+                          ],
+                          "field_errors": {
+                              "email": [
+                                  "Invalid email address"
+                              ]
+                          }
+                      }
+                    }       
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: >
+                    {"message":"Internal server error"}
+  /api/v1/users:
+    summary: Users API Endpoint
+  
+    get:
+      summary: Getting profile details of the logged-in user
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid User GET Request:
+                  value: >
+                    {
+                        "message": "Request successful",
+                        "email": "test@demo.com",
+                        "name": "RoleTester",
+                        "designation": null,
+                        "bio": null,
+                        "phone": null,
+                        "profile_pic": null
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: >
+                    {"message":"No access rights, forbidden!"}
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: >
+                    {"message":"Internal server error"}
+
+    put:
+      summary: User Profile Updation
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example: >                
+                {
+                    "email":"testdemochanged@demo.com",
+                    "password":"passwordchanged",
+                    "name":"RoleTesterEditName",
+                    "designation":"Official Synergy_4APD Tester",
+                    "bio":"I test APIs and make YAMLs for a living :) ",
+                    "phone":"09099090101012291"
+                }
+
+      
+      responses:
+        200:
+          description: User profile edited successfully
+          content:
+            application/json:
+              examples:
+                Valid Notification Read:
+                  value: |
+                    {
+                    "message": "User updated successfully",
+                    "email": "testdemochanged@demo.com",
+                    "name": "RoleTesterEditName",
+                    "designation": "Official Synergy_4APD Tester",
+                    "bio": "I test APIs and make YAMLs for a living :) ",
+                    "phone": "9099090101012291",
+                    "profile_pic": null
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: |
+                    {"message":"No access rights, forbidden!"}
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"message":"Internal server error"}
+
+                    
+  /api/v1/admin/users/<UUID_user>:
+    summary: User Promotion/Demotion API Endpoint - Admin access only
+  
+    put:
+      summary: User Promotion/Demotion API Endpoint - Admin access only
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              example: >                
+                {
+                    "action":"promote"
+                }
+
+      
+      responses:
+        200:
+          description: User promoted successfully
+          content:
+            application/json:
+              examples:
+                Valid User Promotion:
+                  value: |
+                    {
+                      "message": "User promoted successfully to support staff!"
+                    }
+                Valid Support Staff Promotion:
+                  value: |
+                    {
+                        "message": "Support staff promoted successfully to administrator!"
+                    }
+                Valid Administrator Promotion:
+                  value: |
+                    {
+                      "message": "Administrator promoted successfully to Super Administrator!"
+                    }
+                Valid Super Administrator Demotion:
+                  value: |
+                    {
+                      "message": "Super Administrator demoted successfully to admin!"
+                    }
+                Valid Administrator Demotion:
+                  value: |
+                    {
+                      "message": "Administrator demoted successfully to support staff!"
+                    }
+                Valid Support Staff Demotion:
+                  value: |
+                    {
+                      "message": "Support staff demoted successfully to user!"
+                    }
+        400:
+          description: Invalid promotion/demotion request
+          content:
+            application/json:
+              examples:
+                Invalid Super Administrator Promotion:
+                  value: |
+                    {
+                        "message": "User already at highest role hierarchy!"
+                    }
+                Invalid User Demotion:
+                  value: |
+                    {
+                        "message": "User already at lowest role hierarchy!"
+                    }
+                                  
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation - Non-admin trying to access this API:
+                  value: |
+                    {
+                      "meta": {
+                          "code": 403
+                      },
+                      "response": {
+                          "errors": [
+                              "You do not have permission to view this resource."
+                          ]
+                      }
+                    }
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: |
+                    {"message":"Internal server error"}
+
+
+  
