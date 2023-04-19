@@ -1,0 +1,33 @@
+{% extends 'layout/base.html' %}
+{% set title = form_title %}
+
+{% block content %}
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <div class="col-11 col-md-3 bg-body rounded shadow-sm p-4 mb-5">
+            <h5 class="fw-bold">{{ form_title }}</h5>
+            <form class="mt-3" method="POST">
+                {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label(class='form-label') }} {{ '*' if field.flags.required }}
+                        {% if field.type == 'BooleanField' %}
+                            <div class="form-check form-switch d-inline-block align-middle ms-2">
+                                {{ field(class='form-check-input') }}
+                            </div>
+                        {% elif field.type == 'SelectField' %}
+                            {{ field(class='form-select') }}
+                        {% else %}
+                            {{ field(class='form-control ' + ('is-invalid' if form[field.name].errors else '') ) }}
+                        {% endif %}
+                        <div class="invalid-feedback">
+                            {{ form[field.name].errors[0] }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="text-end">
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                    <button class="btn btn-primary">{{ primary_button_text }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
