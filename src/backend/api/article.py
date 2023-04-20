@@ -11,8 +11,8 @@ create_article_parser.add_argument('content',required=True,nullable=False)
 create_article_parser.add_argument('tags',nullable=True)
 
 put_article_parser=reqparse.RequestParser()
-put_article_parser.add_argument('title',required=True,nullable=False)
-put_article_parser.add_argument('content',required=True,nullable=False)
+put_article_parser.add_argument('title',nullable=False)
+put_article_parser.add_argument('content',nullable=False)
 put_article_parser.add_argument('tags',nullable=False)
 
 class ArticleAPI(Resource):
@@ -106,17 +106,17 @@ class ArticleAPI(Resource):
             },404
         
         args = put_article_parser.parse_args() 
-        title = args.get('title',article.title)
-        content = args.get('content',article.content)
+        title = args.get('title')
+        content = args.get('content')
         tags = args.get('tags',None)
         
-        if title in malformed or content in malformed:
+        if title=='' or content=='':
             return {
                     'message':'Malformed request!'
             },400
         
-        article.title = title
-        article.content = content
+        article.title = title if title else article.title
+        article.content = content if content else article.content
         article.updated_at = datetime.now()
         
         if tags not in malformed:
