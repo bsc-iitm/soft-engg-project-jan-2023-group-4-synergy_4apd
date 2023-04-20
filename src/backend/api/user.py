@@ -20,6 +20,7 @@ class UserAPI(Resource):
     @roles_required('user')
     def put(self):
         user = User.query.filter_by(id=current_user.id).first()
+
         args=edit_user_parser.parse_args()
         email=args.get('email')
         password=args.get('password')
@@ -34,20 +35,13 @@ class UserAPI(Resource):
                     "message":"Email ID already in use"
             },400
         
-        if email:
-            user.email = email        
-        if name:
-            user.name=name
-        if password:
-            user.password = hash_password(password)        
-        if designation:
-            user.designation = designation        
-        if bio:
-            user.bio = bio
-        if phone:
-            user.phone = phone
-        if profile_pic:
-            user.profile_pic = profile_pic
+        user.email = email if email else user.email
+        user.name = name if name else user.name
+        user.password = hash_password(password) if password else user.password
+        user.designation = designation if designation else user.designation
+        user.bio = bio if bio else user.bio
+        user.phone = phone if phone else user.phone
+        user.profile_pic = profile_pic if profile_pic else user.profile_pic  
         
         db.session.commit()
         

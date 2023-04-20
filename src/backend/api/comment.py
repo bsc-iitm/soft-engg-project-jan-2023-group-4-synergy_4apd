@@ -1,4 +1,3 @@
-from flask_login import current_user
 from flask_restful import reqparse,Resource
 from flask_security import login_required,roles_required
 from backend.models import *
@@ -15,6 +14,7 @@ get_comment_parser.add_argument('articleUUID',location='args',required=True)
 
 
 class CommentAPI(Resource):
+    
     @login_required
     @roles_required('user')
     def get(self):

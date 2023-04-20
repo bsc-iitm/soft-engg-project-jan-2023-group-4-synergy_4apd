@@ -1,5 +1,4 @@
-from flask_login import current_user
-from flask_restful import Resource,reqparse
+from flask_restful import Resource
 from flask_security import roles_required,login_required
 from backend.models import *
 from backend.utils import *

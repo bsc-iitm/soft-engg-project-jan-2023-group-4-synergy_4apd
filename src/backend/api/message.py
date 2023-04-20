@@ -74,14 +74,12 @@ class MessageAPI(Resource):
         ticket_id = args.get('ticket_id')
         
         ticket = Ticket.query.filter_by(id=ticket_id).first()
-        print(ticket)
         if not ticket:
             return {
                     "message":"Associated ticket not found!"
             },404
     
         messages = Message.query.filter_by(ticket_id=ticket.id,hidden=False).all()
-        print(messages)
 
         if start < 0 or count < 0:
             return {

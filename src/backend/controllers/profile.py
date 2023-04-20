@@ -1,10 +1,8 @@
 from flask import render_template, request, redirect
 from flask_security import login_required, current_user
-
 from backend import app
 from backend.database import db
 from backend.forms import ProfileForm
-
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -24,7 +22,6 @@ def profile():
         current_user.phone = form.phone.data
 
         db.session.commit()
-
         return redirect('/')
 
     return render_template('dialogs/create_update_dialog.html', form=form,

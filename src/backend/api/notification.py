@@ -17,7 +17,6 @@ class NotificationAPI(Resource):
     def get(self):
         unread_notifications = Notification.query.filter_by(read=False,recipient_id=current_user.id).all()
         return {
-                'status':200,
                 'message':'Request successful',
                 'notifications': stringify_notifications(unread_notifications)
         },200

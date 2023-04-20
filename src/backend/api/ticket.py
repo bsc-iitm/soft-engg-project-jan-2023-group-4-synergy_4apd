@@ -1,4 +1,4 @@
-from flask_security import login_required, auth_required,roles_required
+from flask_security import login_required,roles_required
 from flask_login import current_user
 from flask_restful import Resource,reqparse
 from backend.models import *
@@ -21,7 +21,6 @@ put_ticket_parser.add_argument('assignee',nullable=False)
 
 class TicketAPI(Resource):
     
-    # @auth_required("token")
     @login_required
     @roles_required('user')
     def post(self):

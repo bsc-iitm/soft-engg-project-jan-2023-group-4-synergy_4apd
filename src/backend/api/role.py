@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_security import login_required,roles_required
-from flask_security.utils import hash_password
+from flask_security import roles_required
 from flask_login import current_user
 from backend.models import *
 from backend.utils import *
@@ -27,7 +26,6 @@ class RoleAPI(Resource):
                     "message":"Malformed request"
             },400
         
-
         if 'superadmin' not in current_user.roles:
             if 'admin' in user.roles or action=='demote':
                 return {
@@ -44,13 +42,6 @@ class RoleAPI(Resource):
             return {
                     "message":"User promoted successfully to support staff!"
             },200
-        
-                # if 'support_staff' not in user.roles:
-                #     return {
-                #     "message":"User already at lowest role hierarchy!"
-                #     },400
-                
-                # else:
         
         else:
             if action=='demote':
