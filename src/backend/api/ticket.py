@@ -128,13 +128,13 @@ class TicketAPI(Resource):
             return {"message":"Forbidden!"},403
     
         args=put_ticket_parser.parse_args()
-        title=args.get('title',ticket.title)
-        public=args.get('public',ticket.is_public)
-        status=args.get('status',ticket.status)
-        solution=args.get('solution',ticket.solution)
+        title=args.get('title')
+        public=args.get('public')
+        status=args.get('status')
+        solution=args.get('solution')
         tags=args.get('tags',None)
-        votes=args.get('votes',ticket.votes)
-        assignee=args.get('assignee',ticket.assignee)
+        votes=args.get('votes')
+        assignee=args.get('assignee')
 
         if tags not in malformed:
             tags = tags.split(",")
@@ -143,12 +143,12 @@ class TicketAPI(Resource):
                 if existing_tag:
                     ticket.tags.append(existing_tag)
         
-        ticket.title = title
-        ticket.is_public = public
-        ticket.status=status
-        ticket.solution=solution
-        ticket.votes=votes
-        ticket.assignee=assignee
+        ticket.title = title if title else ticket.title
+        ticket.is_public = public if public else ticket.is_public
+        ticket.status=status if status else ticket.status
+        ticket.solution=solution if solution else ticket.solution
+        ticket.votes=votes if votes else ticket.votes
+        ticket.assignee=assignee if assignee else ticket.assignee
 
         db.session.commit()
 
