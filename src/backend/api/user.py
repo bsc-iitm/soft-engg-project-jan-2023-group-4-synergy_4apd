@@ -21,45 +21,33 @@ class UserAPI(Resource):
     def put(self):
         user = User.query.filter_by(id=current_user.id).first()
         args=edit_user_parser.parse_args()
-        email=args.get('email',user.email)
-        password=args.get('password',None)
-        name=args.get('name',user.name)
-        designation=args.get('designation',user.designation)
-        bio=args.get('bio',user.bio)
-        phone=args.get('phone',user.phone)
-        profile_pic=args.get('profile_pic',user.profile_pic)
+        email=args.get('email')
+        password=args.get('password')
+        name=args.get('name')
+        designation=args.get('designation')
+        bio=args.get('bio')
+        phone=args.get('phone')
+        profile_pic=args.get('profile_pic')
         
         if User.query.filter_by(email=email).first():
             return {
                     "message":"Email ID already in use"
             },400
         
-        if not email:
-            user.email = user.email
-        else:
-            user.email=email
-        if password:
-            user.password = hash_password(password)
-        if not name:
-            user.name = user.name
-        else:
+        if email:
+            user.email = email        
+        if name:
             user.name=name
-        if not designation:
-            user.designation = user.designation
-        else:
-            user.designation=designation
-        if not bio:
-            user.bio = user.bio
-        else:
-            user.bio=bio
-        if not phone:
-            user.phone = user.phone
-        else:
-            user.phone=phone
-        if not profile_pic:
-            user.profile_pic = user.profile_pic
-        else:
-            user.profile_pic=profile_pic
+        if password:
+            user.password = hash_password(password)        
+        if designation:
+            user.designation = designation        
+        if bio:
+            user.bio = bio
+        if phone:
+            user.phone = phone
+        if profile_pic:
+            user.profile_pic = profile_pic
         
         db.session.commit()
         
