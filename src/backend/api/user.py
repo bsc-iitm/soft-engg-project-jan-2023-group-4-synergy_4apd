@@ -44,10 +44,22 @@ class UserAPI(Resource):
             user.name = user.name
         else:
             user.name=name
-        user.designation = designation
-        user.bio = bio
-        user.phone = phone
-        user.profile_pic = profile_pic
+        if not designation:
+            user.designation = user.designation
+        else:
+            user.designation=designation
+        if not bio:
+            user.bio = user.bio
+        else:
+            user.bio=bio
+        if not phone:
+            user.phone = user.phone
+        else:
+            user.phone=phone
+        if not profile_pic:
+            user.profile_pic = user.profile_pic
+        else:
+            user.profile_pic=profile_pic
         
         db.session.commit()
         
