@@ -28,16 +28,22 @@ class UserAPI(Resource):
         bio=args.get('bio',user.bio)
         phone=args.get('phone',user.phone)
         profile_pic=args.get('profile_pic',user.profile_pic)
-
+        
         if User.query.filter_by(email=email).first():
             return {
                     "message":"Email ID already in use"
             },400
         
-        user.email = email
+        if not email:
+            user.email = user.email
+        else:
+            user.email=email
         if password:
             user.password = hash_password(password)
-        user.name = name
+        if not name:
+            user.name = user.name
+        else:
+            user.name=name
         user.designation = designation
         user.bio = bio
         user.phone = phone
