@@ -1828,6 +1828,69 @@ paths:
                   value: |
                     {"message":"Internal server error"}
 
+  /api/v1/analytics:
+    summary: Analytics API Endpoint - Admin access only
+  
+    get:
+      summary: Getting analytics - Admin access only
+      description: ''
+      operationId: ''
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                Valid Analytics GET Request:
+                  value: >
+                    {
+                      "message": "Request successful",
+                      "analytics": {
+                          "totalTickets": 11,
+                          "openTickets": 11,
+                          "inProgressTickets": 0,
+                          "resolvedTickets": 0,
+                          "totalUsers": 7,
+                          "userStudents": 3,
+                          "support_staff": 1,
+                          "administrators": 2,
+                          "super_administrators": 1,
+                          "totalNotifications": 0,
+                          "unreadNotifications": 0,
+                          "readNotifications": 0,
+                          "totalMessages": 11,
+                          "hiddenMessages": 0,
+                          "flaggedMessages": 0,
+                          "totalArticles": 3,
+                          "totalTags": 9,
+                          "totalComments": 2,
+                          "hiddenComments": 0
+                      }
+                    }
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              examples:
+                Forbidden Operation:
+                  value: >
+                    {"message":"No access rights, forbidden!"}
+        
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal Server Error:
+                  value: >
+                    {"message":"Internal server error"}
+                    
   /register:
     summary: User Registration Endpoint    
     post:
