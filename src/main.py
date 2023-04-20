@@ -5,11 +5,9 @@ from backend import app, user_datastore
 from backend.database import db
 from backend.controllers import *
 from backend.api import *
-
 from backend.utils import humanize_time
 
 import flask_login
-
 
 api = Api(app)
 cors = CORS(app)

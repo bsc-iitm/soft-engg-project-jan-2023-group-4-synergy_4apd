@@ -6,10 +6,8 @@ from backend.models import User, Role
 from backend.forms import CustomRegisterForm
 from backend.database import db
 
-
 app = Flask(__name__, template_folder='templates')
 app.app_context().push()
-
 app.config.from_object(Config)
 
 db.init_app(app)
