@@ -20,6 +20,15 @@
             </span>
             {%endif%}
         </div>
+        <div class="me-3 my-auto">
+            <form action="/ticket/{{ticket.id}}/upvote" method="POST">
+                <button class="btn btn-sm btn{{ '-outline' if not upvoted_by_me }}-dark fw-bolder"
+                    title="{{ 'Downvote' if upvoted_by_me else 'Upvote' }}">
+                    <span class="align-middle">{{ ticket.votes }}</span>
+                    <i class="material-icons align-middle">{{ 'expand_more' if upvoted_by_me else 'expand_less' }}</i>
+                </button>
+            </form>
+        </div>
     </div>
     <div class="mt-2">
         <span class="me-3">Last responded: {{ humanize_time(ticket.last_response_time) }}</span>

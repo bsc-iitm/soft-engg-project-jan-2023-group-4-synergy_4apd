@@ -30,8 +30,18 @@ def create_ticket():
 @login_required
 def view_ticket(id):
     ticket = Ticket.query.filter_by(id=id).first()
+
+    if not ticket:
+        return redirect('/')
+    
     messages = Message.query.filter_by(ticket_id=ticket.id).all()
-    return render_template('ticket.html', ticket=ticket, messages=messages)
+
+    if not messages:
+        return redirect('/')
+
+    upvoted_by_me = ticket in current_user.upvotes
+
+    return render_template('ticket.html', ticket=ticket, messages=messages, upvoted_by_me=upvoted_by_me)
 
 
 @app.route('/ticket/<id>/reply', methods=['POST'])
@@ -39,6 +49,10 @@ def view_ticket(id):
 def add_reply(id):
 
     ticket = Ticket.query.filter_by(id=id).first()
+
+    if not ticket:
+        return redirect('/')
+    
     message = Message(
         sender_id=current_user.id,
         ticket_id=ticket.id,
@@ -46,6 +60,27 @@ def add_reply(id):
     ticket.last_response_time = datetime.utcnow()
     
     db.session.add(message)
+    db.session.commit()
+
+    return redirect(f'/ticket/{id}')
+
+
+@app.route('/ticket/<id>/upvote', methods=['POST'])
+@login_required
+def upvote_ticket(id):
+
+    ticket = Ticket.query.filter_by(id=id).first()
+
+    if not ticket:
+        return redirect('/')
+
+    if ticket in current_user.upvotes:
+        current_user.upvotes.remove(ticket)
+        ticket.votes = ticket.votes - 1
+    else:
+        current_user.upvotes.append(ticket)
+        ticket.votes = ticket.votes + 1
+
     db.session.commit()
 
     return redirect(f'/ticket/{id}')

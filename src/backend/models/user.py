@@ -16,5 +16,7 @@ class User(db.Model, UserMixin):
 	profile_pic = db.Column(BLOB)
 	active = db.Column(db.Boolean, nullable=False)
 	fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-	
+
 	roles = db.relationship('Role', secondary='roles_users', backref=db.backref('user', lazy='dynamic'))
+	
+	upvotes = db.relationship('Ticket', secondary='upvotes_users', backref=db.backref('user', lazy='dynamic'))
