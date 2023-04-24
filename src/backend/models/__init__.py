@@ -9,3 +9,4 @@ from .ticket import *
 from .tickets_tags import *
 from .user import *
 from .notification import *
+from .upvotes_users import *
