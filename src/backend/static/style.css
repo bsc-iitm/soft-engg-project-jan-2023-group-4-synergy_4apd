@@ -1,0 +1,34 @@
+/* Author: Afnan */
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+.bg-alpha {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+::-webkit-scrollbar {
+    height: 8px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    display: none;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.16);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.12);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.20);
+}

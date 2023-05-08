@@ -1,0 +1,21 @@
+{% extends 'layout/base.html' %}
+{% set title = 'API access' %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center h-100">
+    <div class="col-11 col-md-3 bg-body rounded shadow-sm p-4 mb-5">
+        <h5 class="fw-bold">API Access Token</h5>
+        <p class="mt-3">Use this token to access Service Desk via the REST API. This token would be valid for 2 hours.</p>
+        <div class="mb-3">
+            <div class="bg-light p-3 rounded">
+                <code>{{ current_user.get_auth_token() }}</code>
+            </div>
+        </div>
+        <p>An authorization header must be sent with every request to the API as follows:</p>
+        <p><code>Authorization: TOKEN</code></p>
+        <div class="text-end">
+            <a href="/" class="btn btn-primary">Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

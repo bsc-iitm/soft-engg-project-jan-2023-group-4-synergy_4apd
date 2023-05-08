@@ -1,0 +1,28 @@
+<div class="d-flex flex-row bg-white p-3 border border-top-0 rounded">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="col-1">Votes</th>
+                <th scope="col" class="col-3">Title</th>
+                <th scope="col" class="col-1">Status</th>
+                <th scope="col" class="col-1">Last Responded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr onclick="window.location.href = '/ticket/{{ ticket.id }}'">
+                <th scope="row">{{ ticket.votes }}</th>
+                <td>{{ ticket.title }}</td>
+                {% if ticket.status == 0 %}
+                <td>Open</td>
+                {% elif ticket.status == 1 %}
+                <td>In Progress</td>
+                {% else %}
+                <td>Closed</td>
+                {%endif%}
+                <td>{{ humanize_time(ticket.last_response_time) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
